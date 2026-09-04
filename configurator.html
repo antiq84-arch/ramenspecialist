@@ -1,0 +1,956 @@
+<!DOCTYPE html>
+<html lang="nl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>RamenSpecialist — Configurator</title>
+<style>
+*{margin:0;padding:0;box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+:root{
+  --bg:#0f172a;--s1:#1e293b;--s2:#263348;--s3:#2d3d55;
+  --border:#334155;--border2:#475569;
+  --orange:#E8651A;--orange2:#f0853a;--orange-bg:rgba(232,101,26,.12);
+  --text:#f1f5f9;--text2:#94a3b8;--text3:#64748b;
+  --green:#22c55e;--green-bg:rgba(34,197,94,.1);
+  --blue:#3b82f6;--red:#ef4444;
+  --r:6px;--tr:all .15s ease;
+}
+html,body{height:100%;overflow:hidden}
+body{font-family:"Inter","Segoe UI",system-ui,sans-serif;background:var(--bg);color:var(--text);font-size:13px;line-height:1.5;display:flex;flex-direction:column}
+
+/* HEADER */
+.hdr{height:48px;background:var(--s1);border-bottom:1px solid var(--border);display:flex;align-items:center;justify-content:space-between;padding:0 16px;flex-shrink:0;gap:12px}
+.hdr-logo{display:flex;align-items:center;gap:8px}
+.hdr-mark{width:28px;height:28px;background:var(--orange);border-radius:6px;display:flex;align-items:center;justify-content:center;flex-shrink:0}
+.hdr-mark svg{width:16px;height:16px;fill:#fff}
+.hdr-name{font-size:14px;font-weight:800;letter-spacing:-.3px}
+.hdr-name span{color:var(--orange)}
+.hdr-sub{font-size:9px;color:var(--text3);letter-spacing:.4px;text-transform:uppercase}
+.hdr-right{display:flex;align-items:center;gap:8px}
+.hdr-stat{font-size:11px;color:var(--text3)}
+.hdr-btn{border:1px solid var(--border);background:transparent;color:var(--text2);border-radius:5px;padding:5px 10px;font-size:11px;font-weight:600;cursor:pointer;font-family:inherit;transition:var(--tr)}
+.hdr-btn:hover{background:var(--s2);color:var(--text)}
+
+/* LAYOUT */
+.app{display:flex;flex:1;overflow:hidden;min-height:0}
+
+/* LEFT */
+.left{width:300px;flex-shrink:0;background:var(--s1);border-right:1px solid var(--border);display:flex;flex-direction:column;overflow:hidden}
+.left-scroll{flex:1;overflow-y:auto;padding:12px 12px 20px}
+.left-scroll::-webkit-scrollbar{width:3px}
+.left-scroll::-webkit-scrollbar-thumb{background:var(--border);border-radius:2px}
+
+/* CENTER */
+.center{flex:1;min-width:0;display:flex;flex-direction:column;overflow:hidden}
+.center-bar{height:44px;background:var(--s1);border-bottom:1px solid var(--border);display:flex;align-items:center;justify-content:space-between;padding:0 14px;flex-shrink:0}
+.cb-title{font-size:13px;font-weight:600;color:var(--text2)}
+.cb-dims{font-size:11px;color:var(--text3)}
+.view-tog{display:flex;background:var(--bg);border-radius:5px;padding:2px;gap:1px}
+.vt{padding:4px 10px;border-radius:4px;font-size:10px;font-weight:600;cursor:pointer;border:none;background:transparent;color:var(--text3);font-family:inherit;transition:var(--tr)}
+.vt.on{background:var(--s1);color:var(--text)}
+.svg-area{flex:1;display:flex;align-items:center;justify-content:center;padding:16px;overflow:hidden}
+.empty-state{display:flex;flex-direction:column;align-items:center;justify-content:center;flex:1;gap:10px;color:var(--text3)}
+.es-icon{font-size:42px;opacity:.25}
+
+/* RIGHT */
+.right{width:272px;flex-shrink:0;background:var(--s1);border-left:1px solid var(--border);display:flex;flex-direction:column;overflow:hidden}
+.rp-hdr{padding:10px 12px;border-bottom:1px solid var(--border);flex-shrink:0}
+.rp-title{font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.5px;color:var(--text2)}
+.rp-sub{font-size:10px;color:var(--text3);margin-top:1px}
+.order-scroll{flex:1;overflow-y:auto;padding:8px}
+.order-scroll::-webkit-scrollbar{width:3px}
+.order-scroll::-webkit-scrollbar-thumb{background:var(--border);border-radius:2px}
+.order-empty{padding:24px 12px;text-align:center;color:var(--text3);font-size:11px}
+.oi{background:var(--s2);border:1px solid var(--border);border-radius:7px;padding:9px 10px;margin-bottom:6px;cursor:pointer;transition:var(--tr)}
+.oi:hover{border-color:var(--border2)}
+.oi.editing{border-color:var(--orange);box-shadow:0 0 0 2px var(--orange-bg)}
+.oi-top{display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:3px}
+.oi-pos{font-size:9px;font-weight:700;color:var(--orange);text-transform:uppercase;letter-spacing:.3px}
+.oi-acts{display:flex;gap:3px}
+.oia{width:20px;height:20px;border:none;border-radius:4px;cursor:pointer;display:flex;align-items:center;justify-content:center;font-size:10px;transition:var(--tr)}
+.oia-e{background:rgba(59,130,246,.15);color:var(--blue)}
+.oia-e:hover{background:rgba(59,130,246,.3)}
+.oia-d{background:rgba(239,68,68,.15);color:var(--red)}
+.oia-d:hover{background:rgba(239,68,68,.3)}
+.oi-name{font-size:12px;font-weight:600;color:var(--text);margin-bottom:1px}
+.oi-dim{font-size:11px;color:var(--text2)}
+.oi-detail{font-size:10px;color:var(--text3);line-height:1.5;margin-top:1px}
+.oi-qty{display:inline-block;background:var(--orange);color:#fff;font-size:9px;font-weight:800;padding:1px 6px;border-radius:3px;margin-top:3px}
+.rp-foot{padding:10px 12px;border-top:1px solid var(--border);flex-shrink:0}
+.rp-summary{background:var(--s2);border-radius:6px;padding:8px 10px;margin-bottom:8px;font-size:10px}
+.rps-row{display:flex;justify-content:space-between;padding:2px 0;color:var(--text2)}
+.rps-row.total{border-top:1px solid var(--border);margin-top:4px;padding-top:4px;font-weight:600;font-size:11px;color:var(--text)}
+.c-field{margin-bottom:6px}
+.c-inp{width:100%;background:var(--bg);border:1px solid var(--border);border-radius:5px;padding:6px 8px;font-size:11px;color:var(--text);font-family:inherit;outline:none;transition:var(--tr)}
+.c-inp:focus{border-color:var(--orange)}
+.c-inp::placeholder{color:var(--text3)}
+.sub-btn{width:100%;background:var(--green);color:#fff;border:none;border-radius:6px;padding:9px;font-size:12px;font-weight:700;font-family:inherit;cursor:pointer;transition:var(--tr);margin-top:4px}
+.sub-btn:hover{filter:brightness(1.1)}
+
+/* SECTION LABELS */
+.slabel{font-size:9px;font-weight:700;text-transform:uppercase;letter-spacing:.5px;color:var(--text3);margin:12px 0 6px;display:flex;align-items:center;gap:6px}
+.slabel:first-child{margin-top:0}
+.slabel::after{content:'';flex:1;height:1px;background:var(--border)}
+.badge-new{background:var(--green-bg);color:var(--green);font-size:8px;font-weight:700;padding:1px 5px;border-radius:3px}
+
+/* CATEGORY PILLS */
+.cat-pills{display:flex;flex-wrap:wrap;gap:4px;margin-bottom:2px}
+.cpill{border:1.5px solid var(--border);background:transparent;color:var(--text2);border-radius:5px;padding:4px 9px;font-size:11px;font-weight:600;cursor:pointer;font-family:inherit;transition:var(--tr)}
+.cpill:hover{border-color:var(--border2);color:var(--text)}
+.cpill.on{border-color:var(--orange);background:var(--orange-bg);color:var(--orange)}
+
+/* POPULAR TEMPLATES GRID */
+.pop-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:5px;margin-bottom:6px}
+.tcard{background:var(--bg);border:1.5px solid var(--border);border-radius:7px;padding:7px 5px;cursor:pointer;text-align:center;transition:var(--tr);display:flex;flex-direction:column;align-items:center;gap:4px}
+.tcard:hover{border-color:var(--border2)}
+.tcard.on{border-color:var(--orange);background:var(--orange-bg)}
+.tcard-svg{width:54px;height:40px}
+.tcard-name{font-size:9px;color:var(--text2);line-height:1.3;font-weight:500}
+.tcard.on .tcard-name{color:var(--orange)}
+.custom-btn{width:100%;border:1.5px dashed var(--border);background:transparent;color:var(--text3);border-radius:7px;padding:7px;font-size:11px;font-weight:600;cursor:pointer;font-family:inherit;transition:var(--tr);text-align:center}
+.custom-btn:hover{border-color:var(--border2);color:var(--text2)}
+.custom-btn.on{border-color:var(--orange);color:var(--orange);background:var(--orange-bg)}
+
+/* CUSTOM BUILDER */
+.custom-builder{background:var(--s2);border:1px solid var(--border);border-radius:7px;padding:10px;margin-top:6px;display:none}
+.custom-builder.open{display:block}
+.cb-row{margin-bottom:8px}
+.cb-label{font-size:10px;color:var(--text3);margin-bottom:5px;font-weight:600}
+.cnt-row{display:flex;gap:4px}
+.cnt-n{border:1.5px solid var(--border);background:var(--bg);color:var(--text2);border-radius:5px;padding:4px 0;font-size:12px;font-weight:700;cursor:pointer;font-family:inherit;transition:var(--tr);flex:1;text-align:center}
+.cnt-n:hover,.cnt-n.on{border-color:var(--orange);background:var(--orange-bg);color:var(--orange)}
+.bov-row{display:flex;gap:4px;margin-top:6px}
+.bov-btn{flex:1;border:1.5px solid var(--border);background:var(--bg);color:var(--text2);border-radius:5px;padding:5px;font-size:11px;font-weight:600;cursor:pointer;font-family:inherit;transition:var(--tr);text-align:center}
+.bov-btn.on{border-color:var(--orange);background:var(--orange-bg);color:var(--orange)}
+.sash-grid{display:flex;gap:5px;flex-wrap:wrap;margin-top:6px}
+.sash-card{border:1.5px solid var(--border);border-radius:6px;padding:6px;flex:1;min-width:70px;cursor:pointer;transition:var(--tr)}
+.sash-card.on{border-color:var(--orange);background:var(--orange-bg)}
+.sc-label{font-size:9px;color:var(--text3);margin-bottom:3px;font-weight:600}
+.sc-type-grid{display:grid;grid-template-columns:1fr 1fr;gap:2px}
+.sc-type{font-size:8px;padding:2px 3px;border:1px solid var(--border);border-radius:3px;cursor:pointer;text-align:center;color:var(--text3);transition:var(--tr);background:var(--bg)}
+.sc-type:hover,.sc-type.on{border-color:var(--orange);color:var(--orange);background:var(--orange-bg)}
+
+/* DIMS */
+.dim-row{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:8px}
+.dim-group label{display:block;font-size:10px;color:var(--text3);margin-bottom:4px;font-weight:600}
+.dim-inp{width:100%;background:var(--bg);border:1px solid var(--border);border-radius:5px;padding:7px 9px;font-size:13px;font-weight:600;color:var(--text);font-family:inherit;outline:none;transition:var(--tr)}
+.dim-inp:focus{border-color:var(--orange)}
+.dim-unit{font-size:10px;color:var(--text3);margin-top:2px;text-align:right}
+.qty-row label{display:block;font-size:10px;color:var(--text3);margin-bottom:4px;font-weight:600}
+.qty-inp{background:var(--bg);border:1px solid var(--border);border-radius:5px;padding:7px 9px;font-size:13px;font-weight:600;color:var(--text);font-family:inherit;outline:none;transition:var(--tr);width:80px}
+.qty-inp:focus{border-color:var(--orange)}
+
+/* CLASS PILLS */
+.class-row{display:flex;gap:5px;margin-bottom:2px}
+.cls-btn{flex:1;border:1.5px solid var(--border);background:var(--bg);border-radius:6px;padding:8px 4px;text-align:center;cursor:pointer;transition:var(--tr)}
+.cls-btn:hover{border-color:var(--border2)}
+.cls-btn.on{border-color:var(--orange);background:var(--orange-bg)}
+.cls-name{font-size:12px;font-weight:700;color:var(--text)}
+.cls-sub{font-size:9px;color:var(--text3);margin-top:2px}
+.cls-btn.on .cls-name{color:var(--orange)}
+.cls-btn.on .cls-sub{color:var(--orange);opacity:.7}
+
+/* GLASS */
+.glass-row{display:flex;gap:5px;margin-bottom:6px}
+.gl-btn{flex:1;border:1.5px solid var(--border);background:var(--bg);border-radius:6px;padding:7px;text-align:center;cursor:pointer;transition:var(--tr)}
+.gl-btn:hover{border-color:var(--border2)}
+.gl-btn.on{border-color:var(--orange);background:var(--orange-bg)}
+.gl-name{font-size:11px;font-weight:700;color:var(--text)}
+.gl-desc{font-size:9px;color:var(--text3);margin-top:1px}
+.gl-btn.on .gl-name{color:var(--orange)}
+.gl-sel{width:100%;background:var(--bg);border:1px solid var(--border);border-radius:5px;padding:6px 8px;font-size:11px;color:var(--text);font-family:inherit;outline:none;cursor:pointer}
+.gl-sel option{background:var(--s1)}
+.gl-sel:focus{border-color:var(--orange)}
+
+/* COLORS */
+.col-grid{display:grid;grid-template-columns:repeat(6,1fr);gap:3px;margin-bottom:4px}
+.col-sw{aspect-ratio:1;border-radius:4px;border:2px solid transparent;cursor:pointer;transition:var(--tr)}
+.col-sw:hover{transform:scale(1.1)}
+.col-sw.on{border-color:var(--orange);box-shadow:0 0 0 1px var(--orange)}
+.col-name{font-size:9px;color:var(--text3)}
+.tog-row{display:flex;align-items:center;justify-content:space-between;margin-bottom:6px}
+.tog-lbl{font-size:11px;color:var(--text2);font-weight:500}
+.tog{width:32px;height:17px;background:var(--border);border-radius:8px;position:relative;cursor:pointer;border:none;transition:var(--tr)}
+.tog.on{background:var(--orange)}
+.tog::after{content:'';position:absolute;top:2px;left:2px;width:13px;height:13px;background:#fff;border-radius:50%;transition:left .15s;box-shadow:0 1px 2px rgba(0,0,0,.3)}
+.tog.on::after{left:17px}
+
+/* ROLLUIKEN */
+.rl-list{display:flex;flex-direction:column;gap:3px;margin-bottom:7px}
+.rl-item{display:flex;align-items:center;gap:7px;padding:7px 9px;background:var(--bg);border:1.5px solid var(--border);border-radius:6px;cursor:pointer;transition:var(--tr)}
+.rl-item:hover{border-color:var(--border2)}
+.rl-item.on{border-color:var(--orange);background:var(--orange-bg)}
+.rl-radio{width:13px;height:13px;border-radius:50%;border:2px solid var(--border2);flex-shrink:0;transition:var(--tr)}
+.rl-item.on .rl-radio{background:var(--orange);border-color:var(--orange)}
+.rl-info .rl-name{font-size:11px;font-weight:600;color:var(--text)}
+.rl-info .rl-sub{font-size:9px;color:var(--text3);margin-top:1px}
+.rl-item.on .rl-info .rl-name{color:var(--orange)}
+.drive-row{display:flex;gap:4px;flex-wrap:wrap}
+.drv-btn{border:1.5px solid var(--border);background:var(--bg);color:var(--text2);border-radius:5px;padding:4px 8px;font-size:10px;font-weight:600;cursor:pointer;font-family:inherit;transition:var(--tr)}
+.drv-btn:hover{border-color:var(--border2);color:var(--text)}
+.drv-btn.on{border-color:var(--orange);background:var(--orange-bg);color:var(--orange)}
+
+/* MOSKIET */
+.mosk-pills{display:flex;flex-wrap:wrap;gap:4px}
+.mpill{border:1.5px solid var(--border);background:var(--bg);color:var(--text2);border-radius:5px;padding:4px 8px;font-size:10px;font-weight:600;cursor:pointer;font-family:inherit;transition:var(--tr)}
+.mpill:hover{border-color:var(--border2);color:var(--text)}
+.mpill.on{border-color:var(--orange);background:var(--orange-bg);color:var(--orange)}
+
+/* EXTRAS */
+.ext-row{display:flex;align-items:center;justify-content:space-between;margin-bottom:7px}
+.ext-lbl{font-size:11px;color:var(--text2);font-weight:500}
+.ext-sel{background:var(--bg);border:1px solid var(--border);border-radius:5px;padding:4px 7px;font-size:10px;color:var(--text);font-family:inherit;outline:none;cursor:pointer}
+.ext-sel option{background:var(--s1)}
+.ext-sel:focus{border-color:var(--orange)}
+
+/* RC ROW */
+.rc-row{display:flex;gap:4px;margin-bottom:2px}
+.rc-btn{flex:1;border:1.5px solid var(--border);background:var(--bg);color:var(--text2);border-radius:5px;padding:5px;text-align:center;font-size:10px;font-weight:700;cursor:pointer;font-family:inherit;transition:var(--tr)}
+.rc-btn:hover{border-color:var(--border2);color:var(--text)}
+.rc-btn.on{border-color:var(--orange);background:var(--orange-bg);color:var(--orange)}
+
+/* THRESHOLD ROW */
+.thr-sel{width:100%;background:var(--bg);border:1px solid var(--border);border-radius:5px;padding:6px 8px;font-size:11px;color:var(--text);font-family:inherit;outline:none}
+.thr-sel option{background:var(--s1)}
+.thr-sel:focus{border-color:var(--orange)}
+
+/* NOTES */
+.notes-ta{width:100%;background:var(--bg);border:1px solid var(--border);border-radius:5px;padding:7px 9px;font-size:11px;color:var(--text);font-family:inherit;outline:none;resize:none;transition:var(--tr)}
+.notes-ta:focus{border-color:var(--orange)}
+.notes-ta::placeholder{color:var(--text3)}
+
+/* ADD BTN */
+.add-btn{width:100%;background:var(--orange);color:#fff;border:none;border-radius:6px;padding:10px;font-size:13px;font-weight:700;font-family:inherit;cursor:pointer;transition:var(--tr);margin-top:10px}
+.add-btn:hover{background:var(--orange2)}
+.add-btn:active{transform:scale(.98)}
+
+/* SASH POPUP */
+.sash-popup{position:fixed;z-index:999;background:var(--s1);border:1px solid var(--border2);border-radius:8px;padding:12px;min-width:220px;box-shadow:0 8px 32px rgba(0,0,0,.5);display:none}
+.sash-popup.open{display:block}
+.sp-title{font-size:11px;font-weight:700;color:var(--text);margin-bottom:8px}
+.sp-grid{display:grid;grid-template-columns:1fr 1fr;gap:4px}
+.sp-opt{border:1.5px solid var(--border);background:var(--bg);color:var(--text2);border-radius:5px;padding:6px 4px;text-align:center;font-size:10px;font-weight:600;cursor:pointer;font-family:inherit;transition:var(--tr)}
+.sp-opt:hover{border-color:var(--border2);color:var(--text)}
+.sp-opt.on{border-color:var(--orange);background:var(--orange-bg);color:var(--orange)}
+.sp-close{margin-top:8px;width:100%;background:var(--s2);border:1px solid var(--border);color:var(--text2);border-radius:5px;padding:5px;font-size:10px;cursor:pointer;font-family:inherit}
+</style>
+</head>
+<body>
+
+<!-- HEADER -->
+<div class="hdr">
+  <div class="hdr-logo">
+    <div class="hdr-mark"><svg viewBox="0 0 24 24"><path d="M3 9l9-7 9 7v11a2 2 0 01-2 2H5a2 2 0 01-2-2z"/><polyline points="9,22 9,12 15,12 15,22" fill="none" stroke="white" stroke-width="2"/></svg></div>
+    <div><div class="hdr-name">Ramen<span>Specialist</span></div><div class="hdr-sub">Raam Configurator v2</div></div>
+  </div>
+  <div class="hdr-right">
+    <span class="hdr-stat" id="hdr-stat"></span>
+    <button class="hdr-btn" onclick="clearAll()">✕ Wissen</button>
+  </div>
+</div>
+
+<!-- APP -->
+<div class="app">
+
+<!-- ========== LEFT ========== -->
+<div class="left">
+<div class="left-scroll">
+
+  <!-- CATEGORIE -->
+  <div class="slabel">Categorie</div>
+  <div class="cat-pills" id="cat-pills"></div>
+
+  <!-- TYPE -->
+  <div class="slabel" style="margin-top:10px">Type venster</div>
+  <div class="pop-grid" id="pop-grid"></div>
+  <button class="custom-btn" id="custom-toggle-btn" onclick="toggleCustom()">＋ Eigen configuratie</button>
+
+  <!-- CUSTOM BUILDER -->
+  <div class="custom-builder" id="custom-builder">
+    <div class="cb-row">
+      <div class="cb-label">Aantal stulpen</div>
+      <div class="cnt-row" id="cnt-row"></div>
+      <div class="bov-row">
+        <button class="bov-btn" id="bov-no" onclick="setBov(false)">Geen bovenlicht</button>
+        <button class="bov-btn" id="bov-yes" onclick="setBov(true)">Met bovenlicht</button>
+      </div>
+    </div>
+    <div class="cb-row">
+      <div class="cb-label">Openingstype per stulp</div>
+      <div class="sash-grid" id="sash-cfg"></div>
+    </div>
+  </div>
+
+  <!-- AFMETINGEN -->
+  <div class="slabel">Afmetingen</div>
+  <div class="dim-row">
+    <div class="dim-group">
+      <label>Breedte</label>
+      <input class="dim-inp" type="number" id="inp-w" value="1200" min="200" max="6000" step="10" oninput="onDimChange()">
+      <div class="dim-unit">mm</div>
+    </div>
+    <div class="dim-group">
+      <label>Hoogte</label>
+      <input class="dim-inp" type="number" id="inp-h" value="1400" min="200" max="3500" step="10" oninput="onDimChange()">
+      <div class="dim-unit">mm</div>
+    </div>
+  </div>
+  <div class="qty-row">
+    <label>Aantal</label>
+    <input class="qty-inp" type="number" id="inp-qty" value="1" min="1" max="99">
+  </div>
+
+  <!-- KLASSE -->
+  <div class="slabel">Klasse / profiel</div>
+  <div class="class-row">
+    <div class="cls-btn" onclick="setClass('budget',this)"><div class="cls-name">Budget</div><div class="cls-sub">70-76mm</div></div>
+    <div class="cls-btn on" onclick="setClass('optimaal',this)"><div class="cls-name">Optimaal</div><div class="cls-sub">76-82mm</div></div>
+    <div class="cls-btn" onclick="setClass('design',this)"><div class="cls-name">Design</div><div class="cls-sub">82-92mm</div></div>
+  </div>
+
+  <!-- BEGLAZING -->
+  <div class="slabel">Beglazing</div>
+  <div class="glass-row">
+    <div class="gl-btn" onclick="setGlass('double',this)"><div class="gl-name">Dubbel</div><div class="gl-desc">Standaard</div></div>
+    <div class="gl-btn on" onclick="setGlass('triple',this)"><div class="gl-name">Driedubbel</div><div class="gl-desc">Maximale isolatie</div></div>
+  </div>
+  <select class="gl-sel" id="sel-gl-type">
+    <option>Helder (standaard)</option>
+    <option>Geluidswerend (Silence)</option>
+    <option>Veiligheidsglas (gelaagd)</option>
+    <option>Zonwering / Stopsol</option>
+    <option>Gesatineerd / Mat</option>
+    <option>Ornamentglas</option>
+  </select>
+
+  <!-- KLEUR -->
+  <div class="slabel">Kleur</div>
+  <div class="col-grid" id="col-out-grid"></div>
+  <div class="col-name" id="col-out-name"></div>
+  <div class="tog-row" style="margin-top:7px">
+    <span class="tog-lbl">Zelfde kleur binnen</span>
+    <button class="tog on" id="tog-same" onclick="toggleSame()"></button>
+  </div>
+  <div id="col-in-wrap" style="display:none">
+    <div class="col-grid" id="col-in-grid" style="margin-top:4px"></div>
+    <div class="col-name" id="col-in-name"></div>
+  </div>
+
+  <!-- ROLLUIKEN -->
+  <div class="slabel">Rolluiken <span class="badge-new">UITGEBREID</span></div>
+  <div class="rl-list" id="rl-list"></div>
+  <div id="drive-wrap" style="display:none;margin-bottom:4px">
+    <div style="font-size:9px;font-weight:700;color:var(--text3);text-transform:uppercase;letter-spacing:.4px;margin-bottom:5px">Aandrijving</div>
+    <div class="drive-row" id="drive-row"></div>
+  </div>
+
+  <!-- MOSKIETENNET -->
+  <div class="slabel">Moskietennet <span class="badge-new">NIEUW</span></div>
+  <div class="mosk-pills" id="mosk-pills"></div>
+
+  <!-- VENTILATIE -->
+  <div class="slabel">Ventilatie</div>
+  <div class="mosk-pills" id="vent-pills"></div>
+
+  <!-- EXTRA'S -->
+  <div class="slabel">Extra's</div>
+  <div class="ext-row">
+    <span class="ext-lbl">Handgreep</span>
+    <select class="ext-sel" id="sel-handle">
+      <option value="SILVER">Zilver (F1)</option>
+      <option value="WHITE">Wit</option>
+      <option value="BLACK">Zwart mat</option>
+      <option value="GOLD">Goud (F4)</option>
+    </select>
+  </div>
+  <div class="ext-row">
+    <span class="ext-lbl">Vensterbank</span>
+    <button class="tog" id="tog-sill" onclick="togField('hasSill','tog-sill')"></button>
+  </div>
+  <!-- Drempel + RC — alleen deuren/balkon -->
+  <div id="door-extras" style="display:none">
+    <div class="ext-row" style="margin-top:4px">
+      <span class="ext-lbl">Drempel</span>
+      <select class="ext-sel" id="sel-threshold">
+        <option>Standaard ALU</option>
+        <option>Laag (15mm)</option>
+        <option>Valdrempel (auto)</option>
+        <option>Borsteldrempel</option>
+        <option>Geen drempel</option>
+      </select>
+    </div>
+    <div style="margin-bottom:6px">
+      <div style="font-size:9px;font-weight:700;color:var(--text3);text-transform:uppercase;letter-spacing:.4px;margin-bottom:5px">Veiligheidsklasse (RC)</div>
+      <div class="rc-row">
+        <button class="rc-btn on" onclick="setRC('RC1',this)">RC1</button>
+        <button class="rc-btn" onclick="setRC('RC2',this)">RC2</button>
+        <button class="rc-btn" onclick="setRC('RC3',this)">RC3</button>
+      </div>
+      <div id="rc-desc" style="font-size:9px;color:var(--text3);margin-top:3px">Basis beveiliging</div>
+    </div>
+  </div>
+
+  <!-- NOTITIES -->
+  <div class="slabel">Notities</div>
+  <textarea class="notes-ta" id="inp-notes" rows="2" placeholder="Opmerkingen voor deze positie..."></textarea>
+
+  <button class="add-btn" onclick="addToOrder()">＋ Toevoegen aan bestelling</button>
+  <div style="height:16px"></div>
+
+</div><!-- end left-scroll -->
+</div><!-- end left -->
+
+<!-- ========== CENTER ========== -->
+<div class="center">
+  <div class="center-bar">
+    <div><span class="cb-title" id="cb-title">Selecteer een type</span> <span class="cb-dims" id="cb-dims"></span></div>
+    <div class="view-tog">
+      <button class="vt on" onclick="setView('inside',this)">Van binnen</button>
+      <button class="vt" onclick="setView('outside',this)">Van buiten</button>
+    </div>
+  </div>
+  <div class="svg-area" id="svg-area">
+    <div class="empty-state"><div class="es-icon">🪟</div><span style="font-size:12px">Selecteer een type venster</span></div>
+  </div>
+</div>
+
+<!-- ========== RIGHT ========== -->
+<div class="right">
+  <div class="rp-hdr">
+    <div class="rp-title">Bestelling</div>
+    <div class="rp-sub" id="rp-sub">Geen posities</div>
+  </div>
+  <div class="order-scroll" id="order-list">
+    <div class="order-empty">Voeg posities toe via de configurator</div>
+  </div>
+  <div class="rp-foot">
+    <div class="rp-summary" id="rp-summary" style="display:none">
+      <div class="rps-row"><span>Posities</span><span id="sum-pos">0</span></div>
+      <div class="rps-row"><span>Totaal stuks</span><span id="sum-qty">0</span></div>
+      <div class="rps-row total"><span>Glasoppervlak</span><span id="sum-m2">0 m²</span></div>
+    </div>
+    <div class="c-field"><input class="c-inp" id="c-name" placeholder="Naam klant"></div>
+    <div class="c-field"><input class="c-inp" id="c-phone" placeholder="Telefoon"></div>
+    <div class="c-field"><input class="c-inp" id="c-addr" placeholder="Adres werf"></div>
+    <button class="sub-btn" onclick="submitOrder()">📤 Specificatie insturen</button>
+  </div>
+</div>
+
+</div><!-- end app -->
+
+<!-- SASH POPUP -->
+<div class="sash-popup" id="sash-popup">
+  <div class="sp-title" id="sp-title">Stulp 1 — kies openingstype</div>
+  <div class="sp-grid" id="sp-grid"></div>
+  <button class="sp-close" onclick="closePopup()">✕ Sluiten</button>
+</div>
+
+<script>
+// ===========================
+// DATA
+// ===========================
+const CATS = ['Ramen','Deuren','Balkon','Schuif','Speciaal'];
+const CAT_ENG = {Ramen:'Windows',Deuren:'Doors',Balkon:'Balcony',Schuif:'Sliding',Speciaal:'Special'};
+
+const POPULAR = {
+  Windows:[
+    {id:'w-dk1',name:'1-vleugel DK',rows:[{h:100}],sashes:[{t:'TT',s:'L',w:100,f:'G'}]},
+    {id:'w-fix',name:'Vast raam',rows:[{h:100}],sashes:[{t:'FIX',s:'L',w:100,f:'G'}]},
+    {id:'w-2fxt',name:'Vast + DK',rows:[{h:100}],sashes:[{t:'FIX',s:'L',w:50,f:'G'},{t:'TT',s:'R',w:50,f:'G'}]},
+    {id:'w-2tt',name:'2-vleugel DK',rows:[{h:100}],sashes:[{t:'TT',s:'L',w:50,f:'G'},{t:'TT',s:'R',w:50,f:'G'}]},
+    {id:'w-3',name:'3-vleugel',rows:[{h:100}],sashes:[{t:'FIX',s:'L',w:33,f:'G'},{t:'TT',s:'L',w:34,f:'G'},{t:'FIX',s:'R',w:33,f:'G'}]},
+    {id:'w-bov',name:'Met bovenlicht',rows:[{h:30},{h:70}],sashes:[{t:'FIX',s:'L',w:100,f:'G',row:0},{t:'TT',s:'L',w:100,f:'G',row:1}]},
+  ],
+  Doors:[
+    {id:'d-l',name:'Deur links',isDoor:true,rows:[{h:100}],sashes:[{t:'TURN',s:'L',w:100,f:'P'}]},
+    {id:'d-r',name:'Deur rechts',isDoor:true,rows:[{h:100}],sashes:[{t:'TURN',s:'R',w:100,f:'P'}]},
+    {id:'d-top',name:'Deur + bovenlicht',isDoor:true,rows:[{h:25},{h:75}],sashes:[{t:'FIX',s:'L',w:100,f:'G',row:0},{t:'TURN',s:'L',w:100,f:'P',row:1}]},
+    {id:'d-2',name:'Dubbele deur',isDoor:true,rows:[{h:100}],sashes:[{t:'TURN',s:'L',w:50,f:'P'},{t:'MM',s:'R',w:50,f:'G'}]},
+    {id:'d-gl',name:'Glazen deur',isDoor:true,rows:[{h:100}],sashes:[{t:'TURN',s:'L',w:100,f:'G'}]},
+    {id:'d-4',name:'Deur + 2 zijaansl.',isDoor:true,rows:[{h:100}],sashes:[{t:'FIX',s:'L',w:25,f:'G'},{t:'TURN',s:'L',w:50,f:'P'},{t:'FIX',s:'R',w:25,f:'G'}]},
+  ],
+  Balcony:[
+    {id:'b-dk',name:'Balkondeur DK',isDoor:true,rows:[{h:100}],sashes:[{t:'TT',s:'L',w:100,f:'G'}]},
+    {id:'b-2',name:'Balkondeur 2-vl.',isDoor:true,rows:[{h:100}],sashes:[{t:'TT',s:'L',w:50,f:'G'},{t:'MM',s:'R',w:50,f:'G'}]},
+    {id:'b-bov',name:'Met bovenlicht',isDoor:true,rows:[{h:25},{h:75}],sashes:[{t:'FIX',s:'L',w:100,f:'G',row:0},{t:'TT',s:'L',w:100,f:'G',row:1}]},
+    {id:'b-3',name:'3-delig balkon',isDoor:true,rows:[{h:100}],sashes:[{t:'FIX',s:'L',w:33,f:'G'},{t:'TT',s:'L',w:34,f:'G'},{t:'FIX',s:'R',w:33,f:'G'}]},
+  ],
+  Sliding:[
+    {id:'sl-2',name:'HST 2-delig',isDoor:true,rows:[{h:100}],sashes:[{t:'FIX',s:'L',w:50,f:'G'},{t:'SL',s:'L',w:50,f:'G'}]},
+    {id:'sl-3',name:'HST 3-delig',isDoor:true,rows:[{h:100}],sashes:[{t:'FIX',s:'L',w:33,f:'G'},{t:'SL',s:'L',w:34,f:'G'},{t:'FIX',s:'R',w:33,f:'G'}]},
+    {id:'sl-4',name:'HST 4-delig',isDoor:true,rows:[{h:100}],sashes:[{t:'SL',s:'L',w:25,f:'G'},{t:'FIX',s:'L',w:25,f:'G'},{t:'FIX',s:'R',w:25,f:'G'},{t:'SL',s:'R',w:25,f:'G'}]},
+    {id:'sl-5',name:'HST 5-delig',isDoor:true,rows:[{h:100}],sashes:[{t:'FIX',s:'L',w:20,f:'G'},{t:'SL',s:'L',w:20,f:'G'},{t:'FIX',s:'L',w:20,f:'G'},{t:'SL',s:'R',w:20,f:'G'},{t:'FIX',s:'R',w:20,f:'G'}]},
+  ],
+  Special:[
+    {id:'sp-arch',name:'Boogvenster',shape:'ARCH',rows:[{h:100}],sashes:[{t:'FIX',s:'L',w:100,f:'G'}]},
+    {id:'sp-tri',name:'Driehoek',shape:'TRI',rows:[{h:100}],sashes:[{t:'FIX',s:'L',w:100,f:'G'}]},
+    {id:'sp-rd',name:'Rond venster',shape:'ROUND',rows:[{h:100}],sashes:[{t:'FIX',s:'L',w:100,f:'G'}]},
+    {id:'sp-trap',name:'Trapezium',shape:'TRAP',rows:[{h:100}],sashes:[{t:'FIX',s:'L',w:100,f:'G'}]},
+  ],
+};
+
+const COLORS=[
+  {n:'Wit (RAL 9016)',v:'#F5F5F5'},{n:'Crème (RAL 9001)',v:'#fdf6e3'},
+  {n:'Antraciet (RAL 7016)',v:'#3b3f44'},{n:'Zwart (RAL 9005)',v:'#111'},
+  {n:'Zilvergrijs (RAL 7001)',v:'#8f9aaa'},{n:'Blauwgrijs (RAL 7031)',v:'#4f6070'},
+  {n:'Eiken Goud',v:'#92400e'},{n:'Walnoot',v:'#5c3317'},
+  {n:'Alu Naturel',v:'#9ca3af'},{n:'Brons',v:'#6b4c23'},
+  {n:'Groen (RAL 6005)',v:'#1a4a2e'},{n:'Antiek eiken',v:'#8B5E3C'},
+];
+
+const SASH_TYPES=[
+  {id:'TT',nl:'Draai-kiep L'},{id:'TTR',nl:'Draai-kiep R'},
+  {id:'FIX',nl:'Vast'},{id:'TILT',nl:'Kiep'},
+  {id:'TURN',nl:'Draai L'},{id:'TURNR',nl:'Draai R'},
+  {id:'SL',nl:'Schuif'},
+];
+
+const RC_DESC={RC1:'Basis beveiliging — standaard PVC/ALU',RC2:'Inbraakwerend ±3 min — vereist door verzekeraar',RC3:'Hoge beveiliging ±5 min — banken, juweliers'};
+
+// ===========================
+// STATE
+// ===========================
+const S={
+  cat:'Windows', tmpl:null, viewSide:'inside',
+  customOpen:false, numSashes:1, hasBov:false,
+  customSashes:[{t:'TT',s:'L'}],
+  klass:'optimaal', glass:'triple', glassType:0,
+  colorOut:0, colorIn:0, sameColor:true,
+  rolluik:'NONE', drive:'MANUAL',
+  moskiet:'NONE', vent:'NONE',
+  hasSill:false,
+  handle:'SILVER', rc:'RC1', threshold:'Standaard ALU',
+  orderItems:[], editIdx:-1,
+};
+let popupSashIdx=-1;
+
+// ===========================
+// INIT
+// ===========================
+function init(){
+  renderCats(); renderPopular(); renderCustomBuilder();
+  renderColorGrids(); renderRolluiken(); renderDrive();
+  renderMoskiet(); renderVent();
+  setDefaultDims();
+}
+
+function renderCats(){
+  document.getElementById('cat-pills').innerHTML=CATS.map(c=>`<button class="cpill${S.cat===CAT_ENG[c]?' on':''}" onclick="setCat('${CAT_ENG[c]}')">${c}</button>`).join('');
+}
+
+function setCat(c){
+  S.cat=c; S.tmpl=null;
+  renderCats(); renderPopular();
+  document.getElementById('door-extras').style.display=(c==='Doors'||c==='Balcony')?'block':'none';
+  setDefaultDims(); updatePreview();
+}
+
+function setDefaultDims(){
+  const isSlide=S.cat==='Sliding', isDoor=S.cat==='Doors'||S.cat==='Balcony';
+  document.getElementById('inp-w').value=isSlide?3000:isDoor?900:1200;
+  document.getElementById('inp-h').value=isSlide?2300:isDoor?2100:1400;
+}
+
+// ===========================
+// POPULAR TEMPLATES
+// ===========================
+function renderPopular(){
+  const list=POPULAR[S.cat]||[];
+  document.getElementById('pop-grid').innerHTML=list.map(t=>`
+    <div class="tcard${S.tmpl&&S.tmpl.id===t.id?' on':''}" onclick="selectTmpl('${t.id}')">
+      <svg class="tcard-svg" viewBox="0 0 60 46">${miniSVG(t)}</svg>
+      <div class="tcard-name">${t.name}</div>
+    </div>`).join('');
+}
+
+function selectTmpl(id){
+  const all=Object.values(POPULAR).flat();
+  S.tmpl=all.find(t=>t.id===id); S.customOpen=false;
+  document.getElementById('custom-builder').classList.remove('open');
+  document.getElementById('custom-toggle-btn').classList.remove('on');
+  renderPopular(); updatePreview();
+}
+
+// ===========================
+// MINI SVG
+// ===========================
+function miniSVG(t){
+  const W=56,H=42,x0=2,y0=2,ft=3.5;
+  if(t.shape==='ARCH'){return`<path d="M${x0},${y0+H}L${x0},${y0+W/2}A${W/2},${W/2} 0 0 1 ${x0+W},${y0+W/2}L${x0+W},${y0+H}Z" fill="#1e293b" stroke="#64748b" stroke-width="1.5"/>`;}
+  if(t.shape==='TRI'){return`<path d="M${x0},${y0+H}L${x0+W/2},${y0}L${x0+W},${y0+H}Z" fill="#1e293b" stroke="#64748b" stroke-width="1.5"/>`;}
+  if(t.shape==='ROUND'){return`<circle cx="${x0+W/2}" cy="${y0+H/2}" r="${Math.min(W,H)/2}" fill="#1e293b" stroke="#64748b" stroke-width="1.5"/>`;}
+  let s=`<rect x="${x0}" y="${y0}" width="${W}" height="${H}" fill="#1e293b" stroke="#64748b" stroke-width="1.5" rx="1"/>`;
+  const allSashes=t.sashes||[];
+  const rows=t.rows||[{h:100}];
+  let cY=y0;
+  rows.forEach((row,ri)=>{
+    const rh=(row.h/100)*H;
+    let cX=x0;
+    allSashes.filter(sh=>(sh.row||0)===ri).forEach(sh=>{
+      const sw=(sh.w/100)*W;
+      const ix=cX+ft,iy=cY+ft,iw=sw-ft*2,ih=rh-ft*2;
+      s+=`<rect x="${cX+ft/2}" y="${cY+ft/2}" width="${sw-ft}" height="${rh-ft}" fill="#1e293b" stroke="#475569" stroke-width=".8"/>`;
+      s+=`<rect x="${ix}" y="${iy}" width="${iw}" height="${ih}" fill="rgba(14,165,233,.2)" stroke="#64748b" stroke-width=".6"/>`;
+      const typ=sh.t;
+      if(typ==='TT'||typ==='TURN'){s+=sh.s==='L'?`<path d="M${ix},${iy}L${ix+iw},${iy+ih/2}L${ix},${iy+ih}" fill="none" stroke="#e8651a" stroke-width=".8"/>`:`<path d="M${ix+iw},${iy}L${ix},${iy+ih/2}L${ix+iw},${iy+ih}" fill="none" stroke="#e8651a" stroke-width=".8"/>`;}
+      if(typ==='TT'||typ==='TILT'){s+=`<path d="M${ix},${iy+ih}L${ix+iw/2},${iy}L${ix+iw},${iy+ih}" fill="none" stroke="#e8651a" stroke-width=".8"/>`;}
+      if(typ==='SL'){const ay=cY+rh/2;s+=`<line x1="${ix}" y1="${ay}" x2="${ix+iw}" y2="${ay}" stroke="#e8651a" stroke-width="1"/><path d="M${ix+iw-4},${ay-3}L${ix+iw},${ay}L${ix+iw-4},${ay+3}" fill="none" stroke="#e8651a" stroke-width="1"/>`;}
+      if(typ==='FIX'){s+=`<line x1="${ix}" y1="${iy}" x2="${ix+iw}" y2="${iy+ih}" stroke="#475569" stroke-width=".5" opacity=".6"/><line x1="${ix+iw}" y1="${iy}" x2="${ix}" y2="${iy+ih}" stroke="#475569" stroke-width=".5" opacity=".6"/>`;}
+      cX+=sw;
+    });
+    cY+=rh;
+  });
+  return s;
+}
+
+// ===========================
+// CUSTOM BUILDER
+// ===========================
+function toggleCustom(){
+  S.customOpen=!S.customOpen;
+  S.tmpl=null;
+  document.getElementById('custom-builder').classList.toggle('open',S.customOpen);
+  document.getElementById('custom-toggle-btn').classList.toggle('on',S.customOpen);
+  renderPopular();
+  renderCustomBuilder();
+  if(S.customOpen) buildCustomTemplate();
+}
+
+function renderCustomBuilder(){
+  // sash count buttons
+  const cr=document.getElementById('cnt-row');
+  if(!cr)return;
+  cr.innerHTML=[1,2,3,4,5].map(n=>`<button class="cnt-n${S.numSashes===n?' on':''}" onclick="setNumSashes(${n})">${n}</button>`).join('');
+  document.getElementById('bov-no').classList.toggle('on',!S.hasBov);
+  document.getElementById('bov-yes').classList.toggle('on',S.hasBov);
+  // sash type cards
+  const sg=document.getElementById('sash-cfg');
+  if(!sg)return;
+  // ensure array length
+  while(S.customSashes.length<S.numSashes)S.customSashes.push({t:'TT',s:'L'});
+  S.customSashes=S.customSashes.slice(0,S.numSashes);
+  sg.innerHTML=S.customSashes.map((sh,i)=>{
+    const opts=[{id:'TT',nl:'DK links'},{id:'TTR',nl:'DK rechts'},{id:'FIX',nl:'Vast'},{id:'TURN',nl:'Draai L'},{id:'TILT',nl:'Kiep'}];
+    return`<div class="sash-card${true?' on':''}">
+      <div class="sc-label">Stulp ${i+1}</div>
+      <div class="sc-type-grid">${opts.map(o=>`<div class="sc-type${sh.t===o.id?' on':''}" onclick="setSashType(${i},'${o.id}')">${o.nl}</div>`).join('')}</div>
+    </div>`;
+  }).join('');
+}
+
+function setNumSashes(n){S.numSashes=n;renderCustomBuilder();buildCustomTemplate();}
+function setBov(v){S.hasBov=v;renderCustomBuilder();buildCustomTemplate();}
+function setSashType(i,t){
+  S.customSashes[i].t=t;
+  S.customSashes[i].s=t.endsWith('R')?'R':'L';
+  renderCustomBuilder();buildCustomTemplate();
+}
+
+function buildCustomTemplate(){
+  const rows=S.hasBov?[{h:25},{h:75}]:[{h:100}];
+  const baseRow=S.hasBov?1:0;
+  const sashes=[];
+  if(S.hasBov)sashes.push({t:'FIX',s:'L',w:100,f:'G',row:0});
+  const w=Math.round(100/S.numSashes);
+  S.customSashes.forEach((sh,i)=>{
+    sashes.push({t:sh.t,s:sh.s,w:i===S.numSashes-1?100-w*(S.numSashes-1):w,f:'G',row:baseRow});
+  });
+  S.tmpl={id:'custom',name:`Eigen (${S.numSashes} stulp${S.numSashes>1?'pen':''})`,rows,sashes};
+  updatePreview();
+}
+
+// ===========================
+// MAIN SVG
+// ===========================
+function buildSVG(tmpl,cfg){
+  const VW=550,VH=520;
+  const topR=cfg.rolluik!=='NONE'?120:45,botR=85,sideR=75;
+  const maxW=VW-sideR*2,maxH=VH-topR-botR;
+  const scale=Math.min(maxW/cfg.w,maxH/cfg.h);
+  const fw=cfg.w*scale,fh=cfg.h*scale;
+  const x0=(VW-fw)/2,y0=topR+(maxH-fh)/2;
+  const ft=Math.max(12,50*scale);
+  const fc=COLORS[cfg.colorOut]?.v||'#F5F5F5';
+  const fs=fc==='#F5F5F5'||fc==='#fdf6e3'?'#475569':'#111';
+  const flip=cfg.viewSide==='outside'?`transform="scale(-1,1) translate(-${VW},0)"`:'';
+  let s=`<svg width="100%" height="100%" viewBox="0 0 ${VW} ${VH}" xmlns="http://www.w3.org/2000/svg">
+<defs>
+  <linearGradient id="gg" x1="0" y1="0" x2="1" y2="1">
+    <stop offset="0%" stop-color="#dbeafe" stop-opacity=".9"/>
+    <stop offset="100%" stop-color="#93c5fd" stop-opacity=".6"/>
+  </linearGradient>
+  <pattern id="pp" width="10" height="10" patternUnits="userSpaceOnUse" patternTransform="rotate(45)">
+    <rect width="10" height="10" fill="#334155"/><line x1="0" y1="0" x2="0" y2="10" stroke="#475569" stroke-width="2"/>
+  </pattern>
+</defs>
+<g ${flip}>`;
+
+  // Shutter
+  if(cfg.rolluik!=='NONE'){
+    const bh=ft*2;
+    s+=`<rect x="${x0-6}" y="${y0-bh}" width="${fw+12}" height="${bh}" fill="#1e293b" stroke="#334155" stroke-width="1" rx="2"/>`;
+    s+=`<line x1="${x0-6}" y1="${y0-bh+10}" x2="${x0+fw+6}" y2="${y0-bh+10}" stroke="#334155" stroke-width="1"/>`;
+    const rl={VOORZET_SK45:'Voorzet SK45',VOORZET_SK90:'Voorzet SK90',INGEBOUWD:'Ingebouwd',COMBI:'Combi + horren'}[cfg.rolluik]||cfg.rolluik;
+    s+=`<text x="${x0+fw/2}" y="${y0-bh/2+5}" text-anchor="middle" fill="#64748b" font-size="11" font-family="Inter,sans-serif">${rl}</text>`;
+  }
+
+  // Frame
+  let fp=`M${x0},${y0}h${fw}v${fh}h${-fw}Z`;
+  if(tmpl.shape==='ARCH'){const r=fw/2;fp=`M${x0},${y0+fh}L${x0},${y0+r}A${r},${r} 0 0 1 ${x0+fw},${y0+r}L${x0+fw},${y0+fh}Z`;}
+  else if(tmpl.shape==='TRI'){fp=`M${x0},${y0+fh}L${x0+fw/2},${y0}L${x0+fw},${y0+fh}Z`;}
+  else if(tmpl.shape==='ROUND'){s+=`<circle cx="${x0+fw/2}" cy="${y0+fh/2}" r="${Math.min(fw,fh)/2}" fill="${fc}" stroke="${fs}" stroke-width="3"/>`;fp=null;}
+  if(fp){s+=`<path d="${fp}" fill="${fc}" stroke="${fs}" stroke-width="3"/>`;s+=`<clipPath id="fc"><path d="${fp}"/></clipPath>`;s+=`<g clip-path="url(#fc)">`;}
+  else{s+=`<g>`;}
+
+  // Sashes
+  const rows=tmpl.rows||[{h:100}];
+  let cY=y0;
+  rows.forEach((row,ri)=>{
+    const rh=(row.h/100)*fh;
+    let cX=x0;
+    (tmpl.sashes||[]).filter(sh=>(sh.row||0)===ri).forEach(sh=>{
+      const sw=(sh.w/100)*fw;
+      const ix=cX+ft,iy=cY+ft,iw=sw-ft*2,ih=rh-ft*2;
+      s+=`<rect x="${cX+ft*.5}" y="${cY+ft*.5}" width="${sw-ft}" height="${rh-ft}" fill="${fc}" stroke="${fs}" stroke-width="1.5"/>`;
+      s+=`<rect x="${ix}" y="${iy}" width="${iw}" height="${ih}" fill="${sh.f==='P'?'url(#pp)':'url(#gg)'}" stroke="${fs}" stroke-width="1.2"/>`;
+      if(sh.t==='FIX'){const cs=Math.min(iw,ih)*.3;s+=`<text x="${ix+iw/2}" y="${iy+ih/2}" text-anchor="middle" dominant-baseline="central" fill="#475569" font-size="${cs}" font-weight="bold" font-family="Inter,sans-serif">X</text>`;}
+      // Opening lines
+      const p=10,isx=cX+p,isy=cY+p,isw=sw-p*2,ish=rh-p*2;
+      const typ=sh.t;
+      s+='<g stroke="#E8651A" stroke-width="2.2" fill="none" opacity=".9">';
+      if(typ==='SL'){const ay=cY+rh/2;const isL=sh.s==='L';const x1=cX+sw*(isL?.15:.85),x2=cX+sw*(isL?.85:.15);s+=`<line x1="${x1}" y1="${ay}" x2="${x2}" y2="${ay}"/><path d="${isL?`M${x2-8},${ay-7}L${x2},${ay}L${x2-8},${ay+7}`:`M${x2+8},${ay-7}L${x2},${ay}L${x2+8},${ay+7}`}"/>`;}
+      if(['TT','TURN','TTR','TURNR','MM'].includes(typ)){if(sh.s==='L')s+=`<path d="M${isx},${isy}L${isx+isw},${isy+ish/2}L${isx},${isy+ish}"/>`;else s+=`<path d="M${isx+isw},${isy}L${isx},${isy+ish/2}L${isx+isw},${isy+ish}"/>`;}
+      if(['TT','TTR','TILT'].includes(typ))s+=`<path d="M${isx},${isy+ish}L${isx+isw/2},${isy}L${isx+isw},${isy+ish}"/>`;
+      s+='</g>';
+      if(typ==='MM'){const lx=sh.s==='L'?cX+sw:cX;s+=`<line x1="${lx}" y1="${cY}" x2="${lx}" y2="${cY+rh}" stroke="#ef4444" stroke-width="2.5" stroke-dasharray="9,7"/>`;}
+      // Handle — clickable
+      if(!['FIX','MM','SL','TILT'].includes(typ)){
+        const hx=sh.s==='L'?cX+sw-ft*.7:cX+ft*.7;const hy=cY+rh/2;
+        const hc={WHITE:'#e2e8f0',SILVER:'#94a3b8',GOLD:'#fbbf24',BLACK:'#1e293b'}[cfg.handle]||'#94a3b8';
+        s+=`<rect x="${hx-5}" y="${hy-17}" width="10" height="34" rx="3" fill="${hc}" stroke="#000" stroke-width=".5"/>`;
+        s+=`<rect x="${hx-3}" y="${hy-4}" width="6" height="38" rx="3" fill="${hc}" stroke="#000" stroke-width=".5"/>`;
+      }
+      cX+=sw;
+    });
+    cY+=rh;
+  });
+  s+=`</g>`;
+
+  // Sill
+  if(cfg.hasSill)s+=`<path d="M${x0-15}${y0+fh}L${x0+fw+15}${y0+fh}L${x0+fw+7}${y0+fh+20}L${x0-7}${y0+fh+20}Z" fill="#94a3b8" stroke="#475569" stroke-width="1"/>`;
+
+  // Vent strip
+  if(cfg.vent!=='NONE')s+=`<rect x="${x0+fw*.1}" y="${y0+ft*.1}" width="${fw*.8}" height="${ft*.4}" fill="#0f172a" rx="2"/>`;
+
+  // Dims
+  const dY=y0+fh+(cfg.hasSill?40:32);
+  s+=`<g stroke="#64748b" stroke-width="1.5" fill="none"><line x1="${x0}" y1="${dY}" x2="${x0+fw}" y2="${dY}"/><line x1="${x0}" y1="${dY-7}" x2="${x0}" y2="${dY+7}"/><line x1="${x0+fw}" y1="${dY-7}" x2="${x0+fw}" y2="${dY+7}"/></g>`;
+  s+=`<text x="${x0+fw/2}" y="${dY+17}" text-anchor="middle" fill="#64748b" font-size="12" font-weight="600" font-family="Inter,sans-serif">${cfg.w} mm</text>`;
+  s+=`<g stroke="#64748b" stroke-width="1.5" fill="none"><line x1="${x0-42}" y1="${y0}" x2="${x0-42}" y2="${y0+fh}"/><line x1="${x0-49}" y1="${y0}" x2="${x0-35}" y2="${y0}"/><line x1="${x0-49}" y1="${y0+fh}" x2="${x0-35}" y2="${y0+fh}"/></g>`;
+  s+=`<text x="${x0-58}" y="${y0+fh/2}" text-anchor="middle" fill="#64748b" font-size="12" font-weight="600" font-family="Inter,sans-serif" transform="rotate(-90,${x0-58},${y0+fh/2})">${cfg.h} mm</text>`;
+  s+=`</g></svg>`;
+  return s;
+}
+
+function getConfig(){
+  return{
+    w:+document.getElementById('inp-w').value||1200,
+    h:+document.getElementById('inp-h').value||1400,
+    colorOut:S.colorOut,colorIn:S.sameColor?S.colorOut:S.colorIn,
+    rolluik:S.rolluik,drive:S.drive,vent:S.vent,
+    hasSill:S.hasSill,handle:document.getElementById('sel-handle').value,
+    viewSide:S.viewSide,
+  };
+}
+
+function updatePreview(){
+  const dims=document.getElementById('cb-dims');
+  const title=document.getElementById('cb-title');
+  const area=document.getElementById('svg-area');
+  if(!S.tmpl){
+    title.textContent='Selecteer een type';dims.textContent='';
+    area.innerHTML='<div class="empty-state"><div class="es-icon">🪟</div><span style="font-size:12px">Selecteer een type venster</span></div>';
+    return;
+  }
+  const w=+document.getElementById('inp-w').value||1200;
+  const h=+document.getElementById('inp-h').value||1400;
+  title.textContent=S.tmpl.name;
+  dims.textContent=`${w} × ${h} mm`;
+  area.innerHTML=buildSVG(S.tmpl,getConfig());
+}
+
+function onDimChange(){updatePreview();}
+function setView(v,btn){S.viewSide=v;document.querySelectorAll('.vt').forEach(b=>b.classList.remove('on'));btn.classList.add('on');updatePreview();}
+
+// ===========================
+// FORM CONTROLS
+// ===========================
+function setClass(k,el){S.klass=k;document.querySelectorAll('.cls-btn').forEach(b=>b.classList.remove('on'));el.classList.add('on');}
+function setGlass(k,el){S.glass=k;document.querySelectorAll('.gl-btn').forEach(b=>b.classList.remove('on'));el.classList.add('on');}
+function togField(field,id){S[field]=!S[field];document.getElementById(id).classList.toggle('on',S[field]);updatePreview();}
+function setRC(v,el){S.rc=v;document.querySelectorAll('.rc-btn').forEach(b=>b.classList.remove('on'));el.classList.add('on');document.getElementById('rc-desc').textContent=RC_DESC[v]||'';}
+
+function renderColorGrids(){
+  ['out','in'].forEach(w=>{
+    const g=document.getElementById(`col-${w}-grid`);
+    if(!g)return;
+    g.innerHTML=COLORS.map((c,i)=>`<div class="col-sw${(w==='out'?S.colorOut:S.colorIn)===i?' on':''}" style="background:${c.v}${c.v==='#F5F5F5'?';border-color:#475569':''}" title="${c.n}" onclick="setColor('${w}',${i})"></div>`).join('');
+    document.getElementById(`col-${w}-name`).textContent=COLORS[w==='out'?S.colorOut:S.colorIn].n;
+  });
+}
+
+function setColor(w,i){if(w==='out'){S.colorOut=i;if(S.sameColor)S.colorIn=i;}else{S.colorIn=i;}renderColorGrids();updatePreview();}
+
+function toggleSame(){S.sameColor=!S.sameColor;document.getElementById('tog-same').classList.toggle('on',S.sameColor);document.getElementById('col-in-wrap').style.display=S.sameColor?'none':'block';if(S.sameColor){S.colorIn=S.colorOut;renderColorGrids();}}
+
+function renderRolluiken(){
+  const opts=[['NONE','Geen',''],[' VOORZET_SK45','Voorzet SK45','Opbouw 45° kap'],['VOORZET_SK90','Voorzet SK90','Rechte kap'],['INGEBOUWD','Ingebouwd','Verborgen in kozijn'],['COMBI','Combi + horren','Rolluik + moskietennet']];
+  document.getElementById('rl-list').innerHTML=opts.map(([v,n,sub])=>`<div class="rl-item${S.rolluik===v.trim()?' on':''}" onclick="setRl('${v.trim()}')"><div class="rl-radio"></div><div class="rl-info"><div class="rl-name">${n}</div>${sub?`<div class="rl-sub">${sub}</div>`:''}</div></div>`).join('');
+  document.getElementById('drive-wrap').style.display=S.rolluik!=='NONE'?'block':'none';
+}
+
+function setRl(v){S.rolluik=v;renderRolluiken();updatePreview();}
+
+function renderDrive(){
+  const opts=[['MANUAL','Manueel'],['ELECTRIC','Elektrisch'],['SOLAR','Zonne-energie'],['SMART','Smart/app']];
+  document.getElementById('drive-row').innerHTML=opts.map(([v,n])=>`<button class="drv-btn${S.drive===v?' on':''}" onclick="setDrive('${v}')">${n}</button>`).join('');
+}
+function setDrive(v){S.drive=v;renderDrive();}
+
+function renderMoskiet(){
+  const opts=[['NONE','Geen'],['FRAME','Raamwerk'],['PLISSE','Plissé'],['OPROL','Oprol'],['ANTIKAT','Anti-kat']];
+  document.getElementById('mosk-pills').innerHTML=opts.map(([v,n])=>`<button class="mpill${S.moskiet===v?' on':''}" onclick="setMosk('${v}')">${n}</button>`).join('');
+}
+function setMosk(v){S.moskiet=v;renderMoskiet();}
+
+function renderVent(){
+  const opts=[['NONE','Geen'],['ON_FRAME','Op frame'],['IN_FRAME','In frame']];
+  document.getElementById('vent-pills').innerHTML=opts.map(([v,n])=>`<button class="mpill${S.vent===v?' on':''}" onclick="setVent('${v}')">${n}</button>`).join('');
+}
+function setVent(v){S.vent=v;renderVent();updatePreview();}
+
+// ===========================
+// SASH POPUP
+// ===========================
+function closePopup(){document.getElementById('sash-popup').classList.remove('open');}
+
+// ===========================
+// ORDER
+// ===========================
+function buildOrderItem(){
+  return{
+    tmplId:S.tmpl?.id,tmplName:S.tmpl?.name||'?',cat:S.cat,
+    w:+document.getElementById('inp-w').value||1200,
+    h:+document.getElementById('inp-h').value||1400,
+    qty:+document.getElementById('inp-qty').value||1,
+    klass:S.klass,glass:S.glass,glassType:document.getElementById('sel-gl-type').value,
+    colorOut:S.colorOut,colorIn:S.colorIn,sameColor:S.sameColor,
+    rolluik:S.rolluik,drive:S.drive,moskiet:S.moskiet,vent:S.vent,
+    hasSill:S.hasSill,handle:document.getElementById('sel-handle').value,
+    rc:S.rc,threshold:document.getElementById('sel-threshold')?.value||'',
+    notes:document.getElementById('inp-notes').value,
+  };
+}
+
+function addToOrder(){
+  if(!S.tmpl){alert('Selecteer eerst een type.');return;}
+  const item=buildOrderItem();
+  if(S.editIdx>=0){S.orderItems[S.editIdx]=item;S.editIdx=-1;}
+  else S.orderItems.push(item);
+  renderOrderList();
+  document.getElementById('inp-notes').value='';
+  document.getElementById('inp-qty').value='1';
+}
+
+function editItem(i){
+  const it=S.orderItems[i];S.editIdx=i;
+  const all=Object.values(POPULAR).flat();
+  S.tmpl=all.find(t=>t.id===it.tmplId)||null;
+  S.cat=it.cat;S.klass=it.klass;S.glass=it.glass;S.rolluik=it.rolluik;S.drive=it.drive;
+  S.moskiet=it.moskiet;S.vent=it.vent;S.hasSill=it.hasSill;S.colorOut=it.colorOut;S.colorIn=it.colorIn;S.sameColor=it.sameColor;S.rc=it.rc||'RC1';
+  document.getElementById('inp-w').value=it.w;document.getElementById('inp-h').value=it.h;document.getElementById('inp-qty').value=it.qty;
+  document.getElementById('inp-notes').value=it.notes||'';
+  document.getElementById('sel-handle').value=it.handle||'SILVER';
+  document.getElementById('tog-sill').classList.toggle('on',S.hasSill);
+  document.getElementById('tog-same').classList.toggle('on',S.sameColor);
+  document.getElementById('col-in-wrap').style.display=S.sameColor?'none':'block';
+  renderCats();renderPopular();renderColorGrids();renderRolluiken();renderDrive();renderMoskiet();renderVent();
+  document.getElementById('door-extras').style.display=(S.cat==='Doors'||S.cat==='Balcony')?'block':'none';
+  updatePreview();renderOrderList();
+}
+
+function deleteItem(i){if(!confirm('Verwijderen?'))return;S.orderItems.splice(i,1);if(S.editIdx===i)S.editIdx=-1;renderOrderList();}
+function clearAll(){if(S.orderItems.length&&!confirm('Alles wissen?'))return;S.orderItems=[];S.editIdx=-1;renderOrderList();}
+
+function renderOrderList(){
+  const list=document.getElementById('order-list');
+  const sub=document.getElementById('rp-sub');
+  const sumDiv=document.getElementById('rp-summary');
+  const n=S.orderItems.length;
+  document.getElementById('hdr-stat').textContent=n?`${n} pos.`:'';
+  if(!n){list.innerHTML='<div class="order-empty">Voeg posities toe via de configurator</div>';sub.textContent='Geen posities';sumDiv.style.display='none';return;}
+  sub.textContent=`${n} positie${n!==1?'s':''}`;
+  // Summary
+  const totalQty=S.orderItems.reduce((a,it)=>a+it.qty,0);
+  const totalM2=S.orderItems.reduce((a,it)=>a+(it.w/1000)*(it.h/1000)*it.qty,0);
+  document.getElementById('sum-pos').textContent=n;
+  document.getElementById('sum-qty').textContent=totalQty;
+  document.getElementById('sum-m2').textContent=totalM2.toFixed(2)+' m²';
+  sumDiv.style.display='block';
+  list.innerHTML=S.orderItems.map((it,i)=>{
+    const det=[it.klass,it.glass==='triple'?'3x glas':'2x glas',COLORS[it.colorOut]?.n].filter(Boolean).join(' · ');
+    const rl=it.rolluik!=='NONE'?it.rolluik:'';
+    const mosk=it.moskiet!=='NONE'?it.moskiet:'';
+    return`<div class="oi${S.editIdx===i?' editing':''}">
+      <div class="oi-top"><span class="oi-pos">Pos. ${i+1}</span><div class="oi-acts"><button class="oia oia-e" onclick="editItem(${i})">✏️</button><button class="oia oia-d" onclick="deleteItem(${i})">🗑</button></div></div>
+      <div class="oi-name">${it.tmplName}</div>
+      <div class="oi-dim">${it.w} × ${it.h} mm</div>
+      <div class="oi-detail">${det}</div>
+      ${rl?`<div class="oi-detail">${rl}${it.drive&&it.drive!=='MANUAL'?' · '+it.drive:''}</div>`:''}
+      ${mosk?`<div class="oi-detail">Horren: ${mosk}</div>`:''}
+      ${it.notes?`<div class="oi-detail" style="color:#f59e0b">💬 ${it.notes}</div>`:''}
+      <span class="oi-qty">×${it.qty}</span>
+    </div>`;
+  }).join('');
+}
+
+function submitOrder(){
+  if(!S.orderItems.length){alert('Voeg minimaal één positie toe.');return;}
+  const name=document.getElementById('c-name').value.trim();
+  const phone=document.getElementById('c-phone').value.trim();
+  if(!name||!phone){alert('Vul naam en telefoon in.');return;}
+  let txt=`🪟 RAAM SPECIFICATIE\n👤 ${name}\n📞 ${phone}\n`;
+  const addr=document.getElementById('c-addr').value.trim();
+  if(addr)txt+=`📍 ${addr}\n`;
+  txt+=`\nPOSITIES:\n`;
+  S.orderItems.forEach((it,i)=>{
+    txt+=`\n${i+1}. ${it.tmplName} — ${it.w}×${it.h}mm ×${it.qty}\n`;
+    txt+=`   ${it.klass.toUpperCase()} · ${it.glass==='triple'?'Driedubbel':'Dubbel'} · ${COLORS[it.colorOut]?.n}\n`;
+    if(it.rolluik!=='NONE')txt+=`   Rolluik: ${it.rolluik} (${it.drive})\n`;
+    if(it.moskiet!=='NONE')txt+=`   Horren: ${it.moskiet}\n`;
+    if(it.vent!=='NONE')txt+=`   Ventilatie: ${it.vent}\n`;
+    if(it.hasSill)txt+=`   Vensterbank: ja\n`;
+    if(it.rc&&it.rc!=='RC1')txt+=`   Veiligheidsklasse: ${it.rc}\n`;
+    if(it.notes)txt+=`   💬 ${it.notes}\n`;
+  });
+  console.log('SUBMIT',{name,phone,addr,items:S.orderItems});
+  alert('✅ Specificatie ontvangen!\n\nOnze adviseur neemt binnen 24u contact op.\n\n'+txt);
+}
+
+// INIT
+document.addEventListener('DOMContentLoaded',()=>{
+  init();
+  // Click outside closes popup
+  document.addEventListener('click',e=>{if(!e.target.closest('#sash-popup')&&!e.target.closest('.svg-area'))closePopup();});
+});
+
+window.setCat=setCat;window.selectTmpl=selectTmpl;window.toggleCustom=toggleCustom;
+window.setNumSashes=setNumSashes;window.setBov=setBov;window.setSashType=setSashType;
+window.setClass=setClass;window.setGlass=setGlass;window.togField=togField;window.setRC=setRC;
+window.setColor=setColor;window.toggleSame=toggleSame;window.setRl=setRl;window.setDrive=setDrive;
+window.setMosk=setMosk;window.setVent=setVent;window.setView=setView;window.onDimChange=onDimChange;
+window.addToOrder=addToOrder;window.editItem=editItem;window.deleteItem=deleteItem;
+window.clearAll=clearAll;window.submitOrder=submitOrder;window.closePopup=closePopup;
+</script>
+</body>
+</html>
