@@ -1,0 +1,1255 @@
+<!DOCTYPE html>
+<html lang="nl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1.0,maximum-scale=1.0">
+<title>RamenSpecialist — Bereken uw prijs</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<style>
+*{margin:0;padding:0;box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+:root{
+  --orange:#E8651A;--orange-light:#FEF3EC;--orange-mid:#F5905A;
+  --ink:#1A1A1A;--ink2:#444;--ink3:#767676;
+  --border:#E2E2E2;--bg:#F7F7F5;--white:#fff;--green:#16A34A;--green-light:#F0FDF4;
+  --radius:14px;--shadow:0 2px 16px rgba(0,0,0,.08);
+}
+html{font-size:16px}
+body{font-family:"Inter",sans-serif;background:var(--bg);color:var(--ink);line-height:1.5;min-height:100vh}
+
+/* SP BAR */
+.sp-bar{background:var(--ink);color:#fff;font-size:11px;font-weight:500;padding:8px 12px;
+  display:flex;align-items:center;justify-content:center;gap:12px;flex-wrap:wrap;text-align:center}
+.sp-item{display:flex;align-items:center;gap:4px;white-space:nowrap}
+.sp-dot{width:6px;height:6px;border-radius:50%;background:#4ade80;animation:pulse 2s infinite;flex-shrink:0}
+@keyframes pulse{0%,100%{opacity:1}50%{opacity:.4}}
+
+/* PROMO */
+.promo-banner{background:linear-gradient(135deg,#E8651A,#f0853a);color:#fff;text-align:center;
+  padding:10px 16px;font-size:12px;font-weight:600}
+.promo-timer{display:inline-block;background:rgba(0,0,0,.2);border-radius:20px;padding:2px 8px;margin-left:6px;font-size:11px}
+
+/* HEADER */
+.header{background:var(--white);border-bottom:1px solid var(--border);
+  padding:12px 16px;display:flex;align-items:center;justify-content:space-between;
+  position:sticky;top:0;z-index:100;gap:8px}
+.logo{display:flex;align-items:center;gap:8px;flex-shrink:0}
+.logo-icon{width:32px;height:32px;background:var(--orange);border-radius:8px;
+  display:flex;align-items:center;justify-content:center;flex-shrink:0}
+.logo-icon svg{width:18px;height:18px;fill:#fff}
+.logo-name{font-size:14px;font-weight:800;letter-spacing:-.3px;color:var(--ink);white-space:nowrap}
+.logo-name span{color:var(--orange)}
+.header-right{display:flex;align-items:center;gap:6px;flex-shrink:0}
+.lang-switch{display:flex;gap:3px}
+.lang-btn{border:1.5px solid var(--border);background:var(--white);border-radius:5px;
+  padding:3px 6px;font-size:10px;font-weight:700;cursor:pointer;font-family:"Inter",sans-serif;
+  color:var(--ink3);transition:all .15s;line-height:1.4}
+.lang-btn.active{border-color:var(--orange);color:var(--orange);background:var(--orange-light)}
+.header-tel{font-size:12px;font-weight:600;color:var(--orange);text-decoration:none;
+  display:flex;align-items:center;gap:4px;white-space:nowrap}
+@media(max-width:360px){.header-tel .tel-text{display:none}}
+
+/* HERO */
+.hero{text-align:center;padding:24px 16px 16px}
+.hero-badge{display:inline-flex;align-items:center;gap:6px;background:var(--green-light);
+  color:var(--green);font-size:11px;font-weight:700;letter-spacing:.4px;text-transform:uppercase;
+  padding:4px 10px;border-radius:20px;margin-bottom:12px}
+.hero h1{font-size:clamp(20px,5vw,28px);font-weight:800;letter-spacing:-.5px;
+  color:var(--ink);line-height:1.2;margin-bottom:8px}
+.hero p{font-size:14px;color:var(--ink2);max-width:400px;margin:0 auto 8px}
+.indicative-notice{display:inline-block;background:#FEF9EC;border:1px solid #F5D87A;
+  color:#92620A;font-size:10px;font-weight:700;letter-spacing:.3px;text-transform:uppercase;
+  padding:4px 10px;border-radius:5px;margin-top:6px}
+
+/* CONTAINER */
+.container{max-width:640px;margin:0 auto;padding:16px 14px 80px}
+
+/* PROGRESS */
+.progress-wrap{background:var(--white);border-radius:var(--radius);padding:14px 16px;
+  margin-bottom:12px;box-shadow:var(--shadow)}
+.progress-label{display:flex;justify-content:space-between;align-items:center;
+  font-size:11px;font-weight:600;color:var(--ink3);margin-bottom:7px;
+  text-transform:uppercase;letter-spacing:.4px}
+.progress-bar{height:5px;background:var(--border);border-radius:3px;overflow:hidden}
+.progress-fill{height:100%;background:linear-gradient(90deg,var(--orange),var(--orange-mid));
+  border-radius:3px;transition:width .4s ease}
+.progress-steps{display:flex;gap:4px;margin-top:8px}
+.p-step{flex:1;height:3px;border-radius:2px;background:var(--border);transition:background .3s}
+.p-step.done{background:var(--orange)}
+.p-step.active{background:var(--orange-mid)}
+
+/* CARD */
+.card{background:var(--white);border-radius:var(--radius);padding:18px 16px;
+  margin-bottom:12px;box-shadow:var(--shadow);border:1.5px solid transparent}
+.card.active{border-color:var(--orange)}
+.card-title{font-size:12px;font-weight:700;text-transform:uppercase;letter-spacing:.5px;
+  color:var(--orange);margin-bottom:14px;display:flex;align-items:center;gap:7px}
+.step-num{width:20px;height:20px;background:var(--orange);color:#fff;border-radius:50%;
+  font-size:10px;font-weight:800;display:flex;align-items:center;justify-content:center;flex-shrink:0}
+
+/* TYPE GRID */
+.type-grid{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:12px}
+.type-btn{border:2px solid var(--border);border-radius:10px;padding:12px 8px;text-align:center;
+  cursor:pointer;transition:all .2s;background:var(--white);font-family:"Inter",sans-serif;width:100%}
+.type-btn:hover,.type-btn.selected{border-color:var(--orange);background:var(--orange-light)}
+.type-icon{font-size:26px;margin-bottom:5px;display:block}
+.type-name{font-size:13px;font-weight:700;color:var(--ink)}
+.type-sub{font-size:10px;color:var(--ink3);margin-top:2px}
+
+/* FLOOR */
+.floor-field{display:none;margin-bottom:10px}
+.floor-field.visible{display:block}
+.field-label{font-size:12px;font-weight:600;color:var(--ink);margin-bottom:6px;display:block}
+.field-row{display:flex;gap:6px;flex-wrap:wrap;margin-bottom:8px}
+.floor-btn{border:2px solid var(--border);border-radius:7px;padding:7px 12px;font-size:12px;
+  font-weight:600;cursor:pointer;background:var(--white);font-family:"Inter",sans-serif;transition:all .2s}
+.floor-btn.selected{border-color:var(--orange);background:var(--orange-light);color:var(--orange)}
+.lift-field{display:none;align-items:center;gap:8px;margin-top:6px;margin-bottom:10px}
+.lift-field.visible{display:flex}
+.lift-toggle{width:40px;height:22px;background:var(--border);border-radius:11px;position:relative;
+  cursor:pointer;transition:background .2s;border:none;flex-shrink:0}
+.lift-toggle.on{background:var(--orange)}
+.lift-toggle::after{content:"";position:absolute;top:2px;left:2px;width:18px;height:18px;
+  background:#fff;border-radius:50%;transition:left .2s;box-shadow:0 1px 3px rgba(0,0,0,.2)}
+.lift-toggle.on::after{left:20px}
+.lift-label{font-size:12px;font-weight:500;color:var(--ink)}
+
+/* BTW GRID */
+.btw-grid{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:12px}
+.btw-btn{border:2px solid var(--border);border-radius:10px;padding:11px 8px;text-align:center;
+  cursor:pointer;background:var(--white);font-family:"Inter",sans-serif;transition:all .2s}
+.btw-btn:hover,.btw-btn.selected{border-color:var(--orange);background:var(--orange-light)}
+.btw-name{font-size:13px;font-weight:700;color:var(--ink)}
+.btw-rate{font-size:11px;font-weight:600;color:var(--orange);margin-top:3px}
+
+/* INLINE FIELDS */
+.inline-fields{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:10px}
+@media(max-width:420px){.inline-fields{grid-template-columns:1fr}}
+.form-group{}
+.form-label{font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.3px;
+  color:var(--ink3);margin-bottom:4px;display:block}
+.req{color:var(--orange)}
+.form-input{width:100%;border:1.5px solid var(--border);border-radius:8px;padding:11px 12px;
+  font-size:14px;font-family:"Inter",sans-serif;color:var(--ink);background:var(--white);
+  outline:none;transition:border-color .2s;-webkit-appearance:none}
+.form-input:focus{border-color:var(--orange)}
+.form-input::placeholder{color:#bbb}
+.field-error{color:#dc2626;font-size:11px;margin-top:4px;font-weight:500;display:none}
+.next-btn{width:100%;background:var(--orange);color:#fff;border:none;border-radius:10px;
+  padding:13px;font-size:15px;font-weight:700;font-family:"Inter",sans-serif;cursor:pointer;
+  margin-top:12px;transition:all .2s;letter-spacing:-.1px}
+.next-btn:active{transform:scale(.98)}
+
+/* WINDOW TYPE ROWS */
+.window-types{display:flex;flex-direction:column;gap:8px}
+.wtype-row{display:flex;align-items:center;gap:10px;padding:10px 12px;
+  background:var(--bg);border-radius:10px;border:1.5px solid var(--border);transition:all .2s}
+.wtype-row.has-value{border-color:var(--orange-mid);background:var(--orange-light)}
+.wtype-icon-wrap{width:48px;height:48px;flex-shrink:0;display:flex;align-items:center;
+  justify-content:center;background:var(--white);border-radius:8px;
+  border:1.5px solid var(--border);transition:all .2s;color:var(--ink2);overflow:hidden}
+.wtype-row.has-value .wtype-icon-wrap{border-color:var(--orange);background:var(--orange);color:#fff}
+.wtype-row.has-value .wtype-icon-wrap svg{stroke:#fff}
+.wtype-icon-wrap svg{width:36px;height:36px;stroke:var(--ink2)}
+.wtype-body{flex:1;min-width:0}
+.wtype-name{font-size:13px;font-weight:700;color:var(--ink)}
+.wtype-dim{font-size:10px;color:var(--ink3);margin-top:1px}
+.counter{display:flex;align-items:center;gap:0;flex-shrink:0}
+.cnt-btn{width:32px;height:32px;border:2px solid var(--border);background:var(--white);
+  border-radius:7px;font-size:17px;font-weight:700;cursor:pointer;display:flex;
+  align-items:center;justify-content:center;color:var(--orange);transition:all .15s;
+  font-family:"Inter",sans-serif}
+.cnt-btn:active{transform:scale(.9)}
+.cnt-val{width:32px;text-align:center;font-size:15px;font-weight:800;color:var(--ink)}
+
+/* GIFT BADGE */
+.gift-badge{display:none;margin-top:8px;background:var(--green-light);border:1px solid #86efac;
+  border-radius:8px;padding:7px 10px;font-size:11px;font-weight:600;color:var(--green);
+  align-items:center;gap:5px}
+.gift-badge.visible{display:flex}
+
+/* PROFILE */
+.profile-grid{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:14px}
+.profile-card{border:2px solid var(--border);border-radius:10px;padding:12px;cursor:pointer;
+  transition:all .2s;background:var(--white);text-align:center;position:relative}
+.profile-card:hover,.profile-card.selected{border-color:var(--orange)}
+.profile-card.selected{background:var(--orange-light)}
+.pc-name{font-size:15px;font-weight:800;color:var(--ink);margin-bottom:3px}
+.pc-brand{font-size:10px;color:var(--ink3);line-height:1.4}
+.pc-delivery{font-size:10px;font-weight:600;margin-top:7px;padding:3px 6px;
+  border-radius:5px;background:var(--green-light);color:var(--green)}
+.pc-price-diff{font-size:10px;color:var(--orange);font-weight:600;margin-top:3px}
+.best-badge{position:absolute;top:-8px;left:50%;transform:translateX(-50%);
+  background:var(--orange);color:#fff;font-size:9px;font-weight:800;letter-spacing:.3px;
+  padding:2px 8px;border-radius:10px;white-space:nowrap}
+
+/* GLASS */
+.glass-grid{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:14px}
+.glass-card{border:2px solid var(--border);border-radius:10px;padding:12px;cursor:pointer;
+  transition:all .2s;background:var(--white)}
+.glass-card:hover,.glass-card.selected{border-color:var(--orange);background:var(--orange-light)}
+.gc-name{font-size:13px;font-weight:700;color:var(--ink);margin-bottom:2px}
+.gc-desc{font-size:10px;color:var(--ink3)}
+
+/* COLOR */
+.color-grid{display:grid;grid-template-columns:1fr 1fr 1fr;gap:8px;margin-bottom:14px}
+.color-card{border:2px solid var(--border);border-radius:10px;padding:10px 6px;cursor:pointer;
+  text-align:center;transition:all .2s;background:var(--white)}
+.color-card:hover,.color-card.selected{border-color:var(--orange);background:var(--orange-light)}
+.color-swatch{width:28px;height:28px;border-radius:50%;margin:0 auto 6px;flex-shrink:0}
+.cc-name{font-size:10px;font-weight:700;color:var(--ink);line-height:1.3}
+.cc-note{font-size:9px;color:var(--ink3);margin-top:2px}
+
+/* EXTRAS (rolluik / vent) */
+.extras-grid,.vent-grid{display:flex;flex-direction:column;gap:6px;margin-bottom:14px}
+.extra-row{display:flex;align-items:center;justify-content:space-between;padding:10px 12px;
+  background:var(--bg);border-radius:9px;border:1.5px solid var(--border);cursor:pointer;transition:all .2s}
+.extra-row.selected{border-color:var(--orange);background:var(--orange-light)}
+.extra-info .extra-name{font-size:13px;font-weight:600;color:var(--ink)}
+.extra-info .extra-sub{font-size:10px;color:var(--ink3);margin-top:1px}
+.extra-check{width:20px;height:20px;border:2px solid var(--border);border-radius:50%;
+  display:flex;align-items:center;justify-content:center;flex-shrink:0;transition:all .2s}
+.extra-row.selected .extra-check{background:var(--orange);border-color:var(--orange)}
+.extra-check svg{width:10px;height:10px;fill:#fff;opacity:0;transition:opacity .2s}
+.extra-row.selected .extra-check svg{opacity:1}
+
+/* PRICE STRIP */
+.price-strip{background:var(--white);border:2px solid var(--orange);border-radius:var(--radius);
+  padding:16px;margin-bottom:12px;box-shadow:var(--shadow)}
+.ps-label{font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.4px;
+  color:var(--ink3);margin-bottom:4px}
+.ps-price{font-size:clamp(26px,7vw,36px);font-weight:800;color:var(--ink);
+  letter-spacing:-1px;line-height:1}
+.ps-price span{color:var(--orange)}
+.btw-block{background:var(--bg);border-radius:8px;padding:9px 11px;margin:10px 0;font-size:12px}
+.btw-row{display:flex;justify-content:space-between;padding:2px 0;color:var(--ink2)}
+.btw-row span:last-child{font-weight:600;color:var(--ink)}
+.ps-hint{font-size:10px;color:var(--orange);margin-bottom:6px;font-weight:600}
+.ps-notice{font-size:9px;font-weight:700;text-transform:uppercase;letter-spacing:.3px;
+  color:#92620A;background:#FEF9EC;border-radius:4px;padding:3px 7px;display:inline-block;margin-top:6px}
+.ps-breakdown{margin-top:10px;border-top:1px solid var(--border);padding-top:8px;font-size:11px;color:var(--ink2)}
+.ps-row{display:flex;justify-content:space-between;padding:2px 0}
+.ps-row.total{font-weight:700;font-size:12px;border-top:1px solid var(--border);margin-top:5px;padding-top:5px}
+.service-strip{display:flex;flex-wrap:wrap;gap:6px;margin-top:10px}
+.svc-item{display:flex;align-items:center;gap:4px;font-size:10px;font-weight:600;color:var(--green)}
+
+/* LEAD FORM */
+.lead-form{background:var(--white);border-radius:var(--radius);padding:18px 16px;
+  margin-bottom:12px;box-shadow:var(--shadow)}
+.form-title{font-size:16px;font-weight:800;color:var(--ink);margin-bottom:5px}
+.form-sub{font-size:12px;color:var(--ink3);margin-bottom:14px}
+.form-grid{display:flex;flex-direction:column;gap:10px}
+@media(min-width:500px){.form-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+  .form-grid .full{grid-column:1/-1}}
+.comm-grid{display:grid;grid-template-columns:1fr 1fr 1fr;gap:7px;margin-top:6px}
+.comm-btn{border:2px solid var(--border);border-radius:8px;padding:9px 4px;text-align:center;
+  cursor:pointer;font-family:"Inter",sans-serif;transition:all .2s;background:var(--white)}
+.comm-btn:hover,.comm-btn.selected{border-color:var(--orange);background:var(--orange-light)}
+.cb-icon{font-size:18px;display:block;margin-bottom:2px}
+.cb-name{font-size:10px;font-weight:700;color:var(--ink)}
+.optional-toggle{font-size:12px;color:var(--orange);font-weight:600;cursor:pointer;
+  display:flex;align-items:center;gap:4px;margin-top:2px}
+.optional-fields{display:none;margin-top:10px;display:flex;flex-direction:column;gap:8px}
+.optional-fields.open{display:flex}
+.optional-fields{display:none}
+.optional-fields.open{display:block}
+.submit-btn{width:100%;background:var(--orange);color:#fff;border:none;border-radius:10px;
+  padding:15px;font-size:15px;font-weight:800;font-family:"Inter",sans-serif;cursor:pointer;
+  margin-top:14px;transition:all .15s;letter-spacing:-.1px}
+.submit-btn:active{transform:scale(.98)}
+.submit-note{text-align:center;font-size:10px;color:var(--ink3);margin-top:7px}
+
+/* DETAIL LINK */
+.detail-link{text-align:center;padding:12px;font-size:12px;color:var(--ink3)}
+.detail-link a{color:var(--orange);font-weight:700;text-decoration:none}
+
+/* SUCCESS */
+.success-screen{display:none;text-align:center;padding:36px 16px;background:var(--white);
+  border-radius:var(--radius);box-shadow:var(--shadow)}
+.success-screen.visible{display:block}
+.success-icon{font-size:48px;margin-bottom:12px}
+.success-title{font-size:20px;font-weight:800;color:var(--ink);margin-bottom:7px}
+.success-sub{font-size:13px;color:var(--ink2);max-width:340px;margin:0 auto 14px}
+.success-steps{text-align:left;background:var(--bg);border-radius:10px;padding:14px}
+.ss-step{display:flex;gap:8px;padding:5px 0;font-size:12px;color:var(--ink2)}
+.ss-num{width:20px;height:20px;background:var(--orange);color:#fff;border-radius:50%;
+  font-size:10px;font-weight:800;display:flex;align-items:center;justify-content:center;
+  flex-shrink:0;margin-top:1px}
+
+/* STICKY PRICE */
+.sticky-price{position:fixed;bottom:0;left:0;right:0;background:var(--white);
+  border-top:2px solid var(--orange);padding:10px 16px;display:flex;align-items:center;
+  justify-content:space-between;z-index:200;box-shadow:0 -4px 20px rgba(0,0,0,.1)}
+.sp-left .sp-tiny{font-size:9px;font-weight:700;text-transform:uppercase;letter-spacing:.3px;color:var(--ink3)}
+.sp-left .sp-big{font-size:20px;font-weight:800;color:var(--ink);letter-spacing:-.5px}
+.sp-left .sp-big span{color:var(--orange)}
+.sp-right{font-size:9px;color:var(--ink3);text-align:right;line-height:1.4}
+@media(min-width:768px){.sticky-price{display:none}}
+
+@media(min-width:500px){.container{padding:24px 20px 80px}.hero{padding:32px 20px 20px}}
+@media print{.sticky-price,.sp-bar,.promo-banner,.header{display:none}}
+</style>
+</head>
+<body>
+
+<div class="sp-bar">
+  <div class="sp-item"><span class="sp-dot"></span><span id="sp-online-num">4</span>&nbsp;<span id="sp-online-word" data-i18n="sp_online_word">mensen</span>&nbsp;<span data-i18n="sp_online_suffix">bekijken dit nu</span></div>
+  <div class="sp-item">📋&nbsp;<span data-i18n="sp_today_prefix">Vandaag al</span>&nbsp;<span id="sp-today">7</span>&nbsp;<span data-i18n="sp_today_suffix">offertes</span></div>
+  <div class="sp-item">⏱&nbsp;<span data-i18n="sp_last_prefix">Laatste offerte:</span>&nbsp;<span id="sp-last">23</span>&nbsp;<span data-i18n="sp_last_suffix">min geleden</span></div>
+</div>
+<div class="promo-banner">
+  🎁 <strong data-i18n="promo_title">ACTIE:</strong> <span data-i18n="promo_text">Gratis muggenschermen bij elke bestelling</span>
+  <span class="promo-timer">t/m 31 augustus</span>
+</div>
+<header class="header">
+  <div class="logo">
+    <div class="logo-icon"><svg viewBox="0 0 24 24"><path d="M3 9l9-7 9 7v11a2 2 0 01-2 2H5a2 2 0 01-2-2z"/><polyline points="9,22 9,12 15,12 15,22" fill="none" stroke="white" stroke-width="2"/></svg></div>
+    <div class="logo-name">Ramen<span>Specialist</span></div>
+  </div>
+  <div class="header-right">
+    <div class="lang-switch">
+      <button class="lang-btn active" onclick="setLang('nl')">NL</button>
+      <button class="lang-btn" onclick="setLang('fr')">FR</button>
+      <button class="lang-btn" onclick="setLang('en')">EN</button>
+    </div>
+    <a href="tel:+32485950740" class="header-tel">📞 <span class="tel-text">+32 485 95 07 40</span></a>
+  </div>
+</header>
+<div class="hero">
+  <div class="hero-badge"><span data-i18n="hero_badge">✓ Gratis · Geen verplichtingen</span></div>
+  <h1 data-i18n="hero_h1">Bereken de prijs van uw ramen en deuren</h1>
+  <p data-i18n="hero_p">Vul in wat u zoekt en ontvang een oriënterende prijs in 2 minuten.</p>
+  <div class="indicative-notice"><span data-i18n="indicative_notice">⚠️ INDICATIEVE PRIJS — kan lager of hoger uitvallen</span></div>
+</div>
+<div class="container">
+<div class="progress-wrap">
+  <div class="progress-label">
+    <span><span data-i18n="step_label">Stap</span> <span id="cur-step">1</span> <span data-i18n="step_of">van</span> 4</span>
+    <span id="pct-label">25%</span>
+  </div>
+  <div class="progress-bar"><div class="progress-fill" id="progress-fill" style="width:25%"></div></div>
+  <div class="progress-steps">
+    <div class="p-step active" id="ps1"></div><div class="p-step" id="ps2"></div>
+    <div class="p-step" id="ps3"></div><div class="p-step" id="ps4"></div>
+  </div>
+</div>
+
+<!-- BLOK 1 -->
+<div class="card active" id="step1">
+  <div class="card-title"><span class="step-num">1</span><span data-i18n="s1_title">Type woning & gegevens</span></div>
+  <div class="field-label" data-i18n="s1_type_label">Type woning</div>
+  <div class="type-grid">
+    <button class="type-btn" onclick="selectType('house')" id="btn-house">
+      <span class="type-icon">🏠</span>
+      <div class="type-name" data-i18n="s1_house">Woning</div>
+      <div class="type-sub" data-i18n="s1_house_sub">Eengezinswoning</div>
+    </button>
+    <button class="type-btn" onclick="selectType('apart')" id="btn-apart">
+      <span class="type-icon">🏢</span>
+      <div class="type-name" data-i18n="s1_apart">Appartement</div>
+      <div class="type-sub" data-i18n="s1_apart_sub">Flat / studio</div>
+    </button>
+  </div>
+  <div class="floor-field" id="floor-field">
+    <div class="field-label" data-i18n="s1_floor">Welke verdieping?</div>
+    <div class="field-row">
+      <button class="floor-btn" onclick="selectFloor(0)" data-i18n="floor_0">Gelijkvloers</button>
+      <button class="floor-btn" onclick="selectFloor(1)">1e</button>
+      <button class="floor-btn" onclick="selectFloor(2)">2e</button>
+      <button class="floor-btn" onclick="selectFloor(3)">3e+</button>
+    </div>
+    <div class="lift-field" id="lift-field">
+      <button class="lift-toggle" id="lift-toggle" onclick="toggleLift()"></button>
+      <span class="lift-label" data-i18n="s1_lift">Lift aanwezig in gebouw</span>
+    </div>
+  </div>
+  <div class="field-label" style="margin-top:10px;margin-bottom:6px" data-i18n="s1_btw_label">Type project</div>
+  <div class="btw-grid">
+    <button class="btw-btn" onclick="selectBtw('renovatie')" id="btn-renovatie">
+      <div class="btw-name" data-i18n="btw_reno">Renovatie</div>
+      <div class="btw-rate">6% BTW</div>
+    </button>
+    <button class="btw-btn" onclick="selectBtw('nieuwbouw')" id="btn-nieuwbouw">
+      <div class="btw-name" data-i18n="btw_new">Nieuwbouw</div>
+      <div class="btw-rate">21% BTW</div>
+    </button>
+  </div>
+  <div class="inline-fields">
+    <div class="form-group">
+      <label class="form-label"><span data-i18n="tel_label">Telefoon</span> <span class="req">*</span></label>
+      <input class="form-input" type="tel" id="f-tel" placeholder="+32 4..." autocomplete="tel" oninput="checkStep1()">
+    </div>
+    <div class="form-group">
+      <label class="form-label"><span data-i18n="gemeente_label">Gemeente</span> <span class="req">*</span></label>
+      <input class="form-input" type="text" id="f-gemeente" placeholder="Antwerpen..." autocomplete="address-level2" oninput="checkStep1()">
+    </div>
+  </div>
+  <div class="field-error" id="step1-error" data-i18n="err_step1">Vul telefoon en gemeente in om verder te gaan.</div>
+  <button class="next-btn" id="step1-next" onclick="goStep2()" style="opacity:.4;pointer-events:none" data-i18n="btn_next">Volgende →</button>
+</div>
+
+<!-- BLOK 2 -->
+<div class="card" id="step2" style="display:none">
+  <div class="card-title"><span class="step-num">2</span><span data-i18n="s2_title">Hoeveel ramen en deuren?</span></div>
+  <div class="window-types">
+    <div class="wtype-row" id="wr-small">
+      <div class="wtype-icon-wrap" id="wi-small"></div>
+      <div class="wtype-body">
+        <div class="wtype-name" data-i18n="wt_small">Klein raam</div>
+        <div class="wtype-dim" data-i18n="wt_small_dim">tot 70×90 cm</div>
+      </div>
+      <div class="counter">
+        <button class="cnt-btn" onclick="changeCount('small',-1)">−</button>
+        <div class="cnt-val" id="cv-small">0</div>
+        <button class="cnt-btn" onclick="changeCount('small',1)">+</button>
+      </div>
+    </div>
+    <div class="wtype-row" id="wr-medium">
+      <div class="wtype-icon-wrap" id="wi-medium"></div>
+      <div class="wtype-body">
+        <div class="wtype-name" data-i18n="wt_medium">Middelgroot raam</div>
+        <div class="wtype-dim" data-i18n="wt_medium_dim">70–120 × 100–140 cm</div>
+      </div>
+      <div class="counter">
+        <button class="cnt-btn" onclick="changeCount('medium',-1)">−</button>
+        <div class="cnt-val" id="cv-medium">0</div>
+        <button class="cnt-btn" onclick="changeCount('medium',1)">+</button>
+      </div>
+    </div>
+    <div class="wtype-row" id="wr-large">
+      <div class="wtype-icon-wrap" id="wi-large"></div>
+      <div class="wtype-body">
+        <div class="wtype-name" data-i18n="wt_large">Groot raam</div>
+        <div class="wtype-dim" data-i18n="wt_large_dim">120–180 × 120–160 cm</div>
+      </div>
+      <div class="counter">
+        <button class="cnt-btn" onclick="changeCount('large',-1)">−</button>
+        <div class="cnt-val" id="cv-large">0</div>
+        <button class="cnt-btn" onclick="changeCount('large',1)">+</button>
+      </div>
+    </div>
+    <div class="wtype-row" id="wr-panoramic">
+      <div class="wtype-icon-wrap" id="wi-panoramic"></div>
+      <div class="wtype-body">
+        <div class="wtype-name" data-i18n="wt_panoramic">Panoramaraam</div>
+        <div class="wtype-dim" data-i18n="wt_panoramic_dim">150–200 × 200–240 cm</div>
+      </div>
+      <div class="counter">
+        <button class="cnt-btn" onclick="changeCount('panoramic',-1)">−</button>
+        <div class="cnt-val" id="cv-panoramic">0</div>
+        <button class="cnt-btn" onclick="changeCount('panoramic',1)">+</button>
+      </div>
+    </div>
+    <div class="wtype-row" id="wr-door">
+      <div class="wtype-icon-wrap" id="wi-door"></div>
+      <div class="wtype-body">
+        <div class="wtype-name" data-i18n="wt_door">Voordeur / achterdeur</div>
+        <div class="wtype-dim" data-i18n="wt_door_dim">90–130 × 210–220 cm</div>
+      </div>
+      <div class="counter">
+        <button class="cnt-btn" onclick="changeCount('door',-1)">−</button>
+        <div class="cnt-val" id="cv-door">0</div>
+        <button class="cnt-btn" onclick="changeCount('door',1)">+</button>
+      </div>
+    </div>
+    <div class="wtype-row" id="wr-hst">
+      <div class="wtype-icon-wrap" id="wi-hst"></div>
+      <div class="wtype-body">
+        <div class="wtype-name" data-i18n="wt_hst">Schuifpui / HST</div>
+        <div class="wtype-dim" data-i18n="wt_hst_dim">200–400 × 210–240 cm</div>
+      </div>
+      <div class="counter">
+        <button class="cnt-btn" onclick="changeCount('hst',-1)">−</button>
+        <div class="cnt-val" id="cv-hst">0</div>
+        <button class="cnt-btn" onclick="changeCount('hst',1)">+</button>
+      </div>
+    </div>
+    <div class="wtype-row" id="wr-garage">
+      <div class="wtype-icon-wrap" id="wi-garage"></div>
+      <div class="wtype-body">
+        <div class="wtype-name" data-i18n="wt_garage">Garagedeur</div>
+        <div class="wtype-dim" data-i18n="wt_garage_dim">tot 250×220 cm · sectionale poort</div>
+      </div>
+      <div class="counter">
+        <button class="cnt-btn" onclick="changeCount('garage',-1)">−</button>
+        <div class="cnt-val" id="cv-garage">0</div>
+        <button class="cnt-btn" onclick="changeCount('garage',1)">+</button>
+      </div>
+    </div>
+  </div>
+  <div class="gift-badge" id="gift-badge">🎁 <span data-i18n="gift_text">Gratis muggenschermen t/m 31 augustus inbegrepen!</span></div>
+  <div style="margin-top:10px">
+    <label class="form-label" data-i18n="notes_label">Bijzondere wensen / opmerkingen</label>
+    <textarea class="form-input" id="f-notes" rows="2" placeholder="Bijv. garagedeur, dakraam..." style="resize:none;font-family:inherit"></textarea>
+  </div>
+</div>
+
+<!-- BLOK 3: OPTIES -->
+<div class="card" id="step3" style="display:none">
+  <div class="card-title"><span class="step-num">3</span><span data-i18n="s3_title">Profielkeuze & opties</span></div>
+  <div class="field-label" style="margin-bottom:7px" data-i18n="s3_profile">Profielsysteem</div>
+  <div class="profile-grid">
+    <div class="profile-card" onclick="selectProfile('budget')" id="pc-budget">
+      <div class="pc-name">Budget</div>
+      <div class="pc-brand">Drutex Iglo 5 Classic<br>Aluplast Ideal 5000</div>
+      <div class="pc-delivery" data-i18n="delivery_3w">✅ Levering binnen 3 weken</div>
+    </div>
+    <div class="profile-card" onclick="selectProfile('optimaal')" id="pc-optimaal">
+      <div class="best-badge" data-i18n="best_badge">⭐ POPULAIRSTE</div>
+      <div class="pc-name">Optimaal</div>
+      <div class="pc-brand">Salamander GreenEvo<br>Aluplast Neo Energeto</div>
+      <div class="pc-delivery" data-i18n="delivery_45w">⏱ Levering 4–5 weken</div>
+      <div class="pc-price-diff" data-i18n="profile_diff">+8–15% betere isolatie</div>
+    </div>
+  </div>
+  <div class="field-label" style="margin-bottom:7px" data-i18n="s3_glass">Beglazing</div>
+  <div class="glass-grid">
+    <div class="glass-card" onclick="selectGlass('double')" id="gc-double">
+      <div class="gc-name" data-i18n="glass_double">Dubbelglas</div>
+      <div class="gc-desc" data-i18n="glass_double_desc">Standaard kwaliteit</div>
+    </div>
+    <div class="glass-card" onclick="selectGlass('triple')" id="gc-triple">
+      <div class="gc-name" data-i18n="glass_triple">Driedubbel glas</div>
+      <div class="gc-desc" data-i18n="glass_triple_desc">Maximale isolatie</div>
+    </div>
+  </div>
+  <div class="field-label" style="margin-bottom:7px" data-i18n="s3_color">Kleur</div>
+  <div class="color-grid">
+    <div class="color-card selected" onclick="selectColor('wit')" id="cc-wit">
+      <div class="color-swatch" style="background:#fff;border:1.5px solid #ddd"></div>
+      <div class="cc-name" data-i18n="color_wit">Wit (standaard)</div>
+      <div class="cc-note" data-i18n="color_wit_note">Geen meerprijs</div>
+    </div>
+    <div class="color-card" onclick="selectColor('buiten')" id="cc-buiten">
+      <div class="color-swatch" style="background:linear-gradient(90deg,#333 50%,#fff 50%);border:1.5px solid #ddd"></div>
+      <div class="cc-name" data-i18n="color_buiten">Kleur buiten</div>
+      
+    </div>
+    <div class="color-card" onclick="selectColor('beide')" id="cc-beide">
+      <div class="color-swatch" style="background:#333"></div>
+      <div class="cc-name" data-i18n="color_beide">Kleur beide zijden</div>
+      
+    </div>
+  </div>
+  <div class="field-label" style="margin-bottom:7px" data-i18n="s3_rolluik">Rolluiken</div>
+  <div class="extras-grid">
+    <div class="extra-row selected" onclick="selectRolluik('geen')" id="rl-geen">
+      <div class="extra-info"><div class="extra-name" data-i18n="rl_geen">Geen rolluiken</div></div>
+      <div class="extra-check"><svg viewBox="0 0 12 10"><polyline points="1,5 4.5,8.5 11,1" stroke="white" stroke-width="2" fill="none"/></svg></div>
+    </div>
+    <div class="extra-row" onclick="selectRolluik('voorzet')" id="rl-voorzet">
+      <div class="extra-info">
+        <div class="extra-name" data-i18n="rl_voorzet">Voorzet rolluik</div>
+        <div class="extra-sub" data-i18n="rl_voorzet_sub">Op de muur gemonteerd</div>
+      </div>
+      <div class="extra-check"><svg viewBox="0 0 12 10"><polyline points="1,5 4.5,8.5 11,1" stroke="white" stroke-width="2" fill="none"/></svg></div>
+    </div>
+    <div class="extra-row" onclick="selectRolluik('ingebouwd')" id="rl-ingebouwd">
+      <div class="extra-info">
+        <div class="extra-name" data-i18n="rl_ingebouwd">Ingebouwd rolluik</div>
+        <div class="extra-sub" data-i18n="rl_ingebouwd_sub">Geïntegreerd in het raam</div>
+      </div>
+      <div class="extra-check"><svg viewBox="0 0 12 10"><polyline points="1,5 4.5,8.5 11,1" stroke="white" stroke-width="2" fill="none"/></svg></div>
+    </div>
+  </div>
+  <div class="field-label" style="margin-bottom:7px" data-i18n="s3_vent">Ventilatie</div>
+  <div class="vent-grid">
+    <div class="extra-row selected" onclick="selectVent('geen')" id="vt-geen">
+      <div class="extra-info"><div class="extra-name" data-i18n="vent_geen">Geen ventilatie</div></div>
+      <div class="extra-check"><svg viewBox="0 0 12 10"><polyline points="1,5 4.5,8.5 11,1" stroke="white" stroke-width="2" fill="none"/></svg></div>
+    </div>
+    <div class="extra-row" onclick="selectVent('ja')" id="vt-ja">
+      <div class="extra-info">
+        <div class="extra-name" data-i18n="vent_ja">Ventilatie inbegrepen</div>
+        <div class="extra-sub" data-i18n="vent_ja_sub">Type bepaald tijdens opmeting</div>
+      </div>
+      <div class="extra-check"><svg viewBox="0 0 12 10"><polyline points="1,5 4.5,8.5 11,1" stroke="white" stroke-width="2" fill="none"/></svg></div>
+    </div>
+  </div>
+</div>
+
+<!-- PRICE STRIP (after options, before form) -->
+<div class="price-strip" id="price-strip" style="display:none">
+  <div class="ps-label" data-i18n="price_label">⚠️ INDICATIEVE PRIJS — incl. plaatsing, excl. BTW</div>
+  <div class="ps-hint" id="ps-hint" style="display:none;font-size:10px;color:var(--orange);margin-bottom:4px">▶ Kies profiel en beglazing voor exactere prijs</div>
+  <div class="ps-price">€<span id="price-low">—</span> – €<span id="price-high">—</span></div>
+  <div class="btw-block">
+    <div class="btw-row"><span data-i18n="btw_reno_label">Renovatie (6% BTW):</span><span id="btw-reno-val">€—</span></div>
+    <div class="btw-row"><span data-i18n="btw_new_label">Nieuwbouw (21% BTW):</span><span id="btw-new-val">€—</span></div>
+  </div>
+  <div class="ps-notice" data-i18n="price_notice">⚠️ INDICATIEVE PRIJS — werkelijke prijs kan afwijken</div>
+  <div class="ps-breakdown" id="ps-breakdown"></div>
+  <div class="service-strip">
+    <div class="svc-item" data-i18n="svc_1">✅ Gratis opmeting</div>
+    <div class="svc-item" data-i18n="svc_2">✅ Plaatsing inbegrepen</div>
+    <div class="svc-item" data-i18n="svc_3">✅ 5 jaar garantie</div>
+    <div class="svc-item" data-i18n="svc_4">✅ Afvoer oud materiaal</div>
+  </div>
+</div>
+
+<!-- BLOK 4: FORM -->
+<div class="lead-form" id="step4" style="display:none">
+  <div class="form-title" data-i18n="form_title">Ontvang uw vrijblijvende offerte</div>
+  <div class="form-sub" data-i18n="form_sub">Wij nemen binnen 24u contact op met uw persoonlijke offerte.</div>
+  <div class="form-grid">
+    <div class="form-group">
+      <label class="form-label"><span data-i18n="fn_label">Voornaam</span> <span class="req">*</span></label>
+      <input class="form-input" type="text" id="f-voornaam" placeholder="Jan" autocomplete="given-name">
+    </div>
+    <div class="form-group">
+      <label class="form-label"><span data-i18n="ln_label">Naam</span> <span class="req">*</span></label>
+      <input class="form-input" type="text" id="f-naam" placeholder="Janssen" autocomplete="family-name">
+    </div>
+    <div class="form-group full">
+      <label class="form-label"><span data-i18n="email_label">E-mail</span> <span class="req">*</span></label>
+      <input class="form-input" type="email" id="f-email" placeholder="jan@voorbeeld.be" autocomplete="email">
+    </div>
+    <div class="form-group full">
+      <label class="form-label" data-i18n="comm_label">Hoe wilt u gecontacteerd worden?</label>
+      <div class="comm-grid">
+        <button class="comm-btn selected" onclick="selectComm(this,'whatsapp')">
+          <span class="cb-icon">💬</span><span class="cb-name" data-i18n="comm_wa">WhatsApp</span>
+        </button>
+        <button class="comm-btn" onclick="selectComm(this,'email')">
+          <span class="cb-icon">📧</span><span class="cb-name" data-i18n="comm_email">E-mail</span>
+        </button>
+        <button class="comm-btn" onclick="selectComm(this,'call')">
+          <span class="cb-icon">📞</span><span class="cb-name" data-i18n="comm_call">Bellen</span>
+        </button>
+      </div>
+    </div>
+    <div class="form-group full">
+      <div class="optional-toggle" onclick="toggleOptional()">ℹ️ <span data-i18n="optional_toggle">Optioneel: help ons beter voorbereiden</span></div>
+      <div class="optional-fields" id="optional-fields">
+        <div class="form-group" style="margin-top:8px">
+          <label class="form-label" data-i18n="f_timing_label">Wanneer plant u de vervanging?</label>
+          <select class="form-input" id="f-timing">
+            <option>Selecteer...</option>
+            <option>Zo snel mogelijk</option>
+            <option>Binnen 3 maanden</option>
+            <option>Binnen 6 maanden</option>
+            <option>Nog aan het oriënteren</option>
+          </select>
+        </div>
+        <div class="form-group">
+          <label class="form-label" data-i18n="f_source_label">Hoe vernam u over ons?</label>
+          <select class="form-input" id="f-source">
+            <option>Selecteer...</option>
+            <option>Google</option>
+            <option>Facebook / Instagram</option>
+            <option>Aanbeveling</option>
+            <option>Anders</option>
+          </select>
+        </div>
+      </div>
+    </div>
+  </div>
+  <button class="submit-btn" onclick="submitForm()" data-i18n="submit_btn">OFFERTE AANVRAGEN →</button>
+  <div class="submit-note" data-i18n="privacy_note">🔒 Uw gegevens worden nooit gedeeld met derden</div>
+</div>
+
+<div class="detail-link" id="detail-link" style="display:none">
+  <span data-i18n="detail_link_text">Wilt u een exacte prijs per raam?</span>
+  <a href="/offerte-aanvragen" data-i18n="detail_link_cta">→ Configureer per raam</a>
+</div>
+
+<div class="success-screen" id="success-screen">
+  <div class="success-icon">🎉</div>
+  <div class="success-title" data-i18n="success_title">Aanvraag ontvangen!</div>
+  <div class="success-sub" data-i18n="success_sub">Wij nemen binnen 24 uur contact op met uw persoonlijke offerte.</div>
+  <div class="success-steps">
+    <div class="ss-step"><div class="ss-num">1</div><span data-i18n="ss1">U ontvangt een bevestiging via</span> <strong id="conf-channel">WhatsApp</strong></div>
+    <div class="ss-step"><div class="ss-num">2</div><span data-i18n="ss2">Onze adviseur berekent uw exacte prijs</span></div>
+    <div class="ss-step"><div class="ss-num">3</div><span data-i18n="ss3">Gratis opmeting op afspraak bij u thuis</span></div>
+  </div>
+</div>
+</div>
+
+<div class="sticky-price" id="sticky-price" style="display:none">
+  <div class="sp-left">
+    <div class="sp-tiny" data-i18n="sticky_notice">⚠️ Indicatieve prijs</div>
+    <div class="sp-big">€<span id="sticky-low">—</span><span style="font-size:13px;color:#767676"> – €</span><span id="sticky-high" style="font-size:15px;font-weight:600;color:#444">—</span></div>
+  </div>
+  <div class="sp-right" data-i18n="sticky_sub">incl. plaatsing · excl. BTW</div>
+</div>
+
+<script>
+
+let currentLang = 'nl';
+
+const T = {
+  nl: {
+    // Social proof
+    sp_online_word: "mensen",
+    sp_online_suffix: "bekijken dit nu",
+    sp_today_prefix: "Vandaag al", sp_today_suffix: "offertes",
+    sp_last_prefix: "Laatste offerte:", sp_last_suffix: "min geleden",
+    // Promo
+    promo_title: "ACTIE:", promo_text: "Gratis muggenschermen bij elke bestelling",
+    // Hero
+    hero_badge: "✓ Gratis · Geen verplichtingen",
+    hero_h1: "Bereken de prijs van uw ramen en deuren",
+    hero_p: "Vul in wat u zoekt en ontvang een oriënterende prijs in 2 minuten.",
+    indicative_notice: "⚠️ INDICATIEVE PRIJS — kan lager of hoger uitvallen",
+    // Progress
+    step_label: "Stap", step_of: "van",
+    // Step 1
+    s1_title: "Type woning & gegevens",
+    s1_type_label: "Type woning",
+    s1_house: "Woning", s1_house_sub: "Eengezinswoning",
+    s1_apart: "Appartement", s1_apart_sub: "Flat / studio",
+    s1_floor: "Welke verdieping?", floor_0: "Gelijkvloers",
+    s1_lift: "Lift aanwezig in gebouw",
+    s1_btw_label: "Type project",
+    btw_reno: "Renovatie", btw_new: "Nieuwbouw",
+    tel_label: "Telefoon", gemeente_label: "Gemeente",
+    gemeente_ph: "Antwerpen, Gent...",
+    err_step1: "Vul telefoon en gemeente in om verder te gaan.",
+    btn_next: "Volgende →",
+    // Step 2
+    s2_title: "Hoeveel ramen en deuren?",
+    wt_small: "Klein raam", wt_small_dim: "tot 70×90 cm",
+    wt_medium: "Middelgroot raam", wt_medium_dim: "70–120 × 100–140 cm",
+    wt_large: "Groot raam", wt_large_dim: "120–180 × 120–160 cm",
+    wt_panoramic: "Panoramaraam", wt_panoramic_dim: "150–200 × 200–240 cm",
+    wt_door: "Voordeur / achterdeur", wt_door_dim: "90–130 × 210–220 cm",
+    wt_hst: "Schuifpui / HST", wt_hst_dim: "200–400 × 210–240 cm",
+    wt_garage: "Garagedeur", wt_garage_dim: "tot 250×220 cm · sectionale poort",
+    notes_label: "Bijzondere wensen / opmerkingen",
+    notes_ph: "Bijv. garagedeur, dakraam, speciale vormen...",
+    gift_text: "Gratis muggenschermen t/m 31 augustus inbegrepen!",
+    // Step 3
+    s3_title: "Profielkeuze & opties",
+    s3_profile: "Profielsysteem",
+    delivery_3w: "✅ Levering binnen 3 weken",
+    delivery_45w: "⏱ Levering 4–5 weken",
+    profile_diff: "+8–15% betere isolatie",
+    best_badge: "⭐ POPULAIRSTE",
+    s3_glass: "Beglazing",
+    glass_double: "Dubbelglas", glass_double_desc: "Standaard kwaliteit",
+    glass_triple: "Driedubbel glas", glass_triple_desc: "Maximale isolatie",
+    s3_color: "Kleur",
+    color_wit: "Wit (standaard)", color_wit_note: "Geen meerprijs",
+    color_buiten: "Kleur buiten", color_beide: "Kleur beide zijden",
+    color_label: "Kleur",
+    s3_rolluik: "Rolluiken",
+    rl_geen: "Geen rolluiken",
+    rl_voorzet: "Voorzet rolluik", rl_voorzet_sub: "Op de muur gemonteerd",
+    rl_ingebouwd: "Ingebouwd rolluik", rl_ingebouwd_sub: "Geïntegreerd in het raam",
+    s3_vent: "Ventilatie",
+    vent_geen: "Geen ventilatie",
+    vent_ja: "Ventilatie inbegrepen", vent_ja_sub: "Type bepaald tijdens opmeting",
+    // Price
+    price_label: "⚠️ INDICATIEVE PRIJS — incl. plaatsing, excl. BTW",
+    price_range: "Inclusief plaatsing · Excl. BTW",
+    price_notice: "⚠️ INDICATIEVE PRIJS — werkelijke prijs kan afwijken",
+    btw_reno_label: "Renovatie (6% BTW):",
+    btw_new_label: "Nieuwbouw (21% BTW):",
+    svc_1: "✅ Gratis opmeting", svc_2: "✅ Plaatsing inbegrepen",
+    svc_3: "✅ 5 jaar garantie", svc_4: "✅ Afvoer oud materiaal",
+    bd_installation: "Plaatsing", bd_removal: "✓ Afvoer oud materiaal",
+    bd_moskito: "🎁 Gratis muggenschermen", bd_total: "Totaal indicatief (excl. BTW)",
+    // Form
+    form_title: "Ontvang uw vrijblijvende offerte",
+    form_sub: "Wij nemen binnen 24u contact op met uw persoonlijke offerte.",
+    fn_label: "Voornaam", fn_ph: "Jan",
+    ln_label: "Naam", ln_ph: "Janssen",
+    email_label: "E-mail", email_ph: "jan@voorbeeld.be",
+    comm_label: "Hoe wilt u gecontacteerd worden?",
+    comm_wa: "WhatsApp", comm_email: "E-mail", comm_call: "Bellen",
+    optional_toggle: "Optioneel: help ons beter voorbereiden",
+    f_timing_label: "Wanneer plant u de vervanging?",
+    f_timing_opt: ["Selecteer...","Zo snel mogelijk","Binnen 3 maanden","Binnen 6 maanden","Nog aan het ori\u00ebnteren"],
+    f_source_label: "Hoe vernam u over ons?",
+    f_source_opt: ["Selecteer...","Google","Facebook / Instagram","Aanbeveling","Anders"],
+    submit_btn: "OFFERTE AANVRAGEN \u2192",
+    privacy_note: "\uD83D\uDD12 Uw gegevens worden nooit gedeeld met derden",
+    submit_err: "Vul voornaam, naam en e-mail in.",
+    // Sticky
+    sticky_notice: "\u26A0\uFE0F Indicatieve prijs",
+    sticky_sub: "incl. plaatsing \u00B7 excl. BTW",
+    // Success
+    success_title: "Aanvraag ontvangen!",
+    success_sub: "Wij nemen binnen 24 uur contact op met uw persoonlijke offerte.",
+    ss1: "U ontvangt een bevestiging via", ss2: "Onze adviseur berekent uw exacte prijs",
+    ss3: "Gratis opmeting op afspraak bij u thuis",
+    // Detail link
+    detail_link_text: "Wilt u een exacte prijs per raam?",
+    detail_link_cta: "\u2192 Configureer per raam",
+  },
+  fr: {
+    sp_online_word: "personnes",
+    sp_online_suffix: "consultent ceci",
+    sp_today_prefix: "Aujourd\u2019hui d\u00E9j\u00E0", sp_today_suffix: "devis",
+    sp_last_prefix: "Dernier devis:", sp_last_suffix: "min pass\u00E9",
+    promo_title: "PROMO:", promo_text: "Moustiquaires gratuits avec chaque commande",
+    hero_badge: "\u2713 Gratuit \u00B7 Sans engagement",
+    hero_h1: "Calculez le prix de vos fen\u00EAtres et portes",
+    hero_p: "Remplissez ce que vous cherchez et recevez un prix indicatif en 2 minutes.",
+    indicative_notice: "\u26A0\uFE0F PRIX INDICATIF \u2014 peut \u00EAtre inf\u00E9rieur ou sup\u00E9rieur",
+    step_label: "\u00C9tape", step_of: "de",
+    s1_title: "Type de logement & coordonn\u00E9es",
+    s1_type_label: "Type de logement",
+    s1_house: "Maison", s1_house_sub: "Maison unifamiliale",
+    s1_apart: "Appartement", s1_apart_sub: "Flat / studio",
+    s1_floor: "Quel \u00E9tage?", floor_0: "Rez-de-chauss\u00E9e",
+    s1_lift: "Ascenseur disponible",
+    s1_btw_label: "Type de projet",
+    btw_reno: "R\u00E9novation", btw_new: "Construction neuve",
+    tel_label: "T\u00E9l\u00E9phone", gemeente_label: "Commune",
+    gemeente_ph: "Bruxelles, Li\u00E8ge...",
+    err_step1: "Veuillez remplir le t\u00E9l\u00E9phone et la commune pour continuer.",
+    btn_next: "Suivant \u2192",
+    s2_title: "Combien de fen\u00EAtres et portes?",
+    wt_small: "Petite fen\u00EAtre", wt_small_dim: "jusqu\u2019\u00E0 70\u00D790 cm",
+    wt_medium: "Fen\u00EAtre moyenne", wt_medium_dim: "70\u2013120 \u00D7 100\u2013140 cm",
+    wt_large: "Grande fen\u00EAtre", wt_large_dim: "120\u2013180 \u00D7 120\u2013160 cm",
+    wt_panoramic: "Fen\u00EAtre panoramique", wt_panoramic_dim: "150\u2013200 \u00D7 200\u2013240 cm",
+    wt_door: "Porte avant / arri\u00E8re", wt_door_dim: "90\u2013130 \u00D7 210\u2013220 cm",
+    wt_hst: "Baie coulissante / HST", wt_hst_dim: "200\u2013400 \u00D7 210\u2013240 cm",
+    wt_garage: "Porte de garage", wt_garage_dim: "jusqu\u2019\u00E0 250\u00D7220 cm \u00B7 porte sectionnelle",
+    notes_label: "Souhaits particuliers / remarques",
+    notes_ph: "Ex. porte de garage, fen\u00EAtre de toit...",
+    gift_text: "Moustiquaires gratuits inclus jusqu\u2019au 31 ao\u00FBt!",
+    s3_title: "Choix du profil & options",
+    s3_profile: "Syst\u00E8me de profil",
+    delivery_3w: "\u2705 Livraison sous 3 semaines",
+    delivery_45w: "\u23F1 Livraison 4\u20135 semaines",
+    profile_diff: "+8\u201315% meilleure isolation",
+    best_badge: "\u2B50 LE PLUS POPULAIRE",
+    s3_glass: "Vitrage",
+    glass_double: "Double vitrage", glass_double_desc: "Qualit\u00E9 standard",
+    glass_triple: "Triple vitrage", glass_triple_desc: "Isolation maximale",
+    s3_color: "Couleur",
+    color_wit: "Blanc (standard)", color_wit_note: "Sans suppl\u00E9ment",
+    color_buiten: "Couleur ext\u00E9rieur", color_beide: "Couleur deux c\u00F4t\u00E9s",
+    color_label: "Couleur",
+    s3_rolluik: "Volets roulants",
+    rl_geen: "Sans volets",
+    rl_voorzet: "Volet en applique", rl_voorzet_sub: "Mont\u00E9 sur le mur",
+    rl_ingebouwd: "Volet int\u00E9gr\u00E9", rl_ingebouwd_sub: "Int\u00E9gr\u00E9 dans le cadre",
+    s3_vent: "Ventilation",
+    vent_geen: "Sans ventilation",
+    vent_ja: "Ventilation incluse", vent_ja_sub: "Type d\u00E9termin\u00E9 lors du mesurage",
+    price_label: "\u26A0\uFE0F PRIX INDICATIF \u2014 incl. placement, excl. TVA",
+    price_range: "Placement inclus \u00B7 Excl. TVA",
+    price_notice: "\u26A0\uFE0F PRIX INDICATIF \u2014 le prix r\u00E9el peut varier",
+    btw_reno_label: "R\u00E9novation (6% TVA):",
+    btw_new_label: "Construction neuve (21% TVA):",
+    svc_1: "\u2705 Mesurage gratuit", svc_2: "\u2705 Placement inclus",
+    svc_3: "\u2705 5 ans de garantie", svc_4: "\u2705 \u00C9vacuation ancien mat\u00E9riel",
+    bd_installation: "Placement", bd_removal: "\u2713 \u00C9vacuation ancien mat\u00E9riel",
+    bd_moskito: "\uD83C\uDF81 Moustiquaires gratuits", bd_total: "Total indicatif (excl. TVA)",
+    form_title: "Recevez votre devis sans engagement",
+    form_sub: "Nous vous contactons dans les 24h avec votre offre personnelle.",
+    fn_label: "Pr\u00E9nom", fn_ph: "Jean",
+    ln_label: "Nom", ln_ph: "Dupont",
+    email_label: "E-mail", email_ph: "jean@exemple.be",
+    comm_label: "Comment souhaitez-vous \u00EAtre contact\u00E9?",
+    comm_wa: "WhatsApp", comm_email: "E-mail", comm_call: "T\u00E9l\u00E9phoner",
+    optional_toggle: "Optionnel: aidez-nous \u00E0 mieux nous pr\u00E9parer",
+    f_timing_label: "Quand planifiez-vous le remplacement?",
+    f_timing_opt: ["S\u00E9lectionner...","D\u00E8s que possible","Dans 3 mois","Dans 6 mois","En cours d\u2019orientation"],
+    f_source_label: "Comment nous avez-vous trouv\u00E9?",
+    f_source_opt: ["S\u00E9lectionner...","Google","Facebook / Instagram","Recommandation","Autre"],
+    submit_btn: "DEMANDER UN DEVIS \u2192",
+    privacy_note: "\uD83D\uDD12 Vos donn\u00E9es ne seront jamais partag\u00E9es",
+    submit_err: "Veuillez remplir pr\u00E9nom, nom et e-mail.",
+    sticky_notice: "\u26A0\uFE0F Prix indicatif",
+    sticky_sub: "placement incl. \u00B7 excl. TVA",
+    success_title: "Demande re\u00E7ue!",
+    success_sub: "Nous vous contacterons dans les 24 heures avec votre offre personnelle.",
+    ss1: "Vous recevrez une confirmation via", ss2: "Notre conseiller calcule votre prix exact",
+    ss3: "Mesurage gratuit sur rendez-vous chez vous",
+    detail_link_text: "Vous souhaitez un prix exact par fen\u00EAtre?",
+    detail_link_cta: "\u2192 Configurer par fen\u00EAtre",
+  },
+  en: {
+    sp_online_word: "people",
+    sp_online_suffix: "viewing this now",
+    sp_today_prefix: "Today already", sp_today_suffix: "quotes",
+    sp_last_prefix: "Last quote:", sp_last_suffix: "min ago",
+    promo_title: "OFFER:", promo_text: "Free insect screens with every order",
+    hero_badge: "\u2713 Free \u00B7 No obligation",
+    hero_h1: "Calculate the price of your windows and doors",
+    hero_p: "Fill in what you need and receive an indicative price in 2 minutes.",
+    indicative_notice: "\u26A0\uFE0F INDICATIVE PRICE \u2014 may be lower or higher",
+    step_label: "Step", step_of: "of",
+    s1_title: "Property type & details",
+    s1_type_label: "Type of property",
+    s1_house: "House", s1_house_sub: "Single-family home",
+    s1_apart: "Apartment", s1_apart_sub: "Flat / studio",
+    s1_floor: "Which floor?", floor_0: "Ground floor",
+    s1_lift: "Lift available in building",
+    s1_btw_label: "Project type",
+    btw_reno: "Renovation", btw_new: "New build",
+    tel_label: "Phone", gemeente_label: "City / Town",
+    gemeente_ph: "Antwerp, Ghent...",
+    err_step1: "Please fill in phone and city to continue.",
+    btn_next: "Next \u2192",
+    s2_title: "How many windows and doors?",
+    wt_small: "Small window", wt_small_dim: "up to 70\u00D790 cm",
+    wt_medium: "Medium window", wt_medium_dim: "70\u2013120 \u00D7 100\u2013140 cm",
+    wt_large: "Large window", wt_large_dim: "120\u2013180 \u00D7 120\u2013160 cm",
+    wt_panoramic: "Panoramic window", wt_panoramic_dim: "150\u2013200 \u00D7 200\u2013240 cm",
+    wt_door: "Front / back door", wt_door_dim: "90\u2013130 \u00D7 210\u2013220 cm",
+    wt_hst: "Sliding door / HST", wt_hst_dim: "200\u2013400 \u00D7 210\u2013240 cm",
+    wt_garage: "Garage door", wt_garage_dim: "up to 250\u00D7220 cm \u00B7 sectional door",
+    notes_label: "Special wishes / remarks",
+    notes_ph: "E.g. garage door, roof window, special shapes...",
+    gift_text: "Free insect screens included until 31 August!",
+    s3_title: "Profile & options",
+    s3_profile: "Profile system",
+    delivery_3w: "\u2705 Delivery within 3 weeks",
+    delivery_45w: "\u23F1 Delivery 4\u20135 weeks",
+    profile_diff: "+8\u201315% better insulation",
+    best_badge: "\u2B50 MOST POPULAR",
+    s3_glass: "Glazing",
+    glass_double: "Double glazing", glass_double_desc: "Standard quality",
+    glass_triple: "Triple glazing", glass_triple_desc: "Maximum insulation",
+    s3_color: "Colour",
+    color_wit: "White (standard)", color_wit_note: "No surcharge",
+    color_buiten: "Colour outside", color_beide: "Colour both sides",
+    color_label: "Colour",
+    s3_rolluik: "Roller shutters",
+    rl_geen: "No roller shutters",
+    rl_voorzet: "Surface-mounted shutter", rl_voorzet_sub: "Mounted on the wall",
+    rl_ingebouwd: "Built-in shutter", rl_ingebouwd_sub: "Integrated in the frame",
+    s3_vent: "Ventilation",
+    vent_geen: "No ventilation",
+    vent_ja: "Ventilation included", vent_ja_sub: "Type determined during measurement",
+    price_label: "\u26A0\uFE0F INDICATIVE PRICE \u2014 incl. installation, excl. VAT",
+    price_range: "Installation included \u00B7 Excl. VAT",
+    price_notice: "\u26A0\uFE0F INDICATIVE PRICE \u2014 actual price may vary",
+    btw_reno_label: "Renovation (6% VAT):",
+    btw_new_label: "New build (21% VAT):",
+    svc_1: "\u2705 Free measurement", svc_2: "\u2705 Installation included",
+    svc_3: "\u2705 5-year guarantee", svc_4: "\u2705 Removal of old material",
+    bd_installation: "Installation", bd_removal: "\u2713 Removal of old material",
+    bd_moskito: "\uD83C\uDF81 Free insect screens", bd_total: "Total indicative (excl. VAT)",
+    form_title: "Receive your no-obligation quote",
+    form_sub: "We will contact you within 24h with your personal quote.",
+    fn_label: "First name", fn_ph: "John",
+    ln_label: "Last name", ln_ph: "Smith",
+    email_label: "E-mail", email_ph: "john@example.com",
+    comm_label: "How would you like to be contacted?",
+    comm_wa: "WhatsApp", comm_email: "E-mail", comm_call: "Call me",
+    optional_toggle: "Optional: help us prepare better",
+    f_timing_label: "When do you plan the replacement?",
+    f_timing_opt: ["Select...","As soon as possible","Within 3 months","Within 6 months","Still orienting"],
+    f_source_label: "How did you find us?",
+    f_source_opt: ["Select...","Google","Facebook / Instagram","Recommendation","Other"],
+    submit_btn: "REQUEST QUOTE \u2192",
+    privacy_note: "\uD83D\uDD12 Your data will never be shared with third parties",
+    submit_err: "Please fill in first name, last name and e-mail.",
+    sticky_notice: "\u26A0\uFE0F Indicative price",
+    sticky_sub: "incl. installation \u00B7 excl. VAT",
+    success_title: "Request received!",
+    success_sub: "We will contact you within 24 hours with your personal quote.",
+    ss1: "You will receive a confirmation via", ss2: "Our advisor calculates your exact price",
+    ss3: "Free measurement appointment at your home",
+    detail_link_text: "Want an exact price per window?",
+    detail_link_cta: "\u2192 Configure per window",
+  }
+};
+
+
+function setLang(lang){
+  currentLang=lang;
+  document.querySelectorAll('.lang-btn').forEach(b=>b.classList.toggle('active',b.textContent===lang.toUpperCase()));
+  const t=T[lang];
+  document.querySelectorAll('[data-i18n]').forEach(el=>{
+    const k=el.getAttribute('data-i18n');
+    if(t[k]!==undefined) el.textContent=t[k];
+  });
+  // Placeholders
+  const ftel=document.getElementById('f-tel'); if(ftel) ftel.placeholder='+32 4...';
+  const fgem=document.getElementById('f-gemeente'); if(fgem) fgem.placeholder=t.gemeente_ph;
+  const fvn=document.getElementById('f-voornaam'); if(fvn) fvn.placeholder=t.fn_ph;
+  const fln=document.getElementById('f-naam'); if(fln) fln.placeholder=t.ln_ph;
+  const fem=document.getElementById('f-email'); if(fem) fem.placeholder=t.email_ph;
+  const fnotes=document.getElementById('f-notes'); if(fnotes) fnotes.placeholder=t.notes_ph;
+  // Select options
+  const timing=document.getElementById('f-timing');
+  if(timing&&t.f_timing_opt) timing.innerHTML=t.f_timing_opt.map(o=>'<option>'+o+'</option>').join('');
+  const source=document.getElementById('f-source');
+  if(source&&t.f_source_opt) source.innerHTML=t.f_source_opt.map(o=>'<option>'+o+'</option>').join('');
+  // Submit btn & privacy
+  const sub=document.querySelector('.submit-btn'); if(sub) sub.textContent=t.submit_btn;
+  const priv=document.querySelector('.submit-note'); if(priv) priv.textContent=t.privacy_note;
+  // Detail link
+  const dl=document.getElementById('detail-link');
+  if(dl) dl.innerHTML='<span>'+t.detail_link_text+'</span> <a href="/offerte-aanvragen">'+t.detail_link_cta+'</a>';
+  // Best badge
+  const bb=document.querySelector('.best-badge'); if(bb) bb.textContent=t.best_badge;
+  // SP online word
+  if(state.profile||Object.values(state.counts).some(v=>v>0)) updatePrice();
+}
+
+// STATE
+const state={
+  buildingType:null,floor:null,liftPresent:false,btwType:null,
+  counts:{small:0,medium:0,large:0,panoramic:0,door:0,hst:0,garage:0},
+  profile:null,glass:null,color:'wit',rolluik:'geen',vent:'geen',
+  comm:'whatsapp',startTime:Date.now(),changes:0
+};
+
+// FACTORY PRICES
+const FACTORY={
+  small:     {d2:78+81*0.54,    d3:1.09, m2:0.54,  inst:100},
+  medium:    {d2:119+101*1.20,  d3:1.23, m2:1.20,  inst:100},
+  large:     {d2:230+55*1.80,   d3:1.17, m2:1.80,  inst:100},
+  panoramic: {d2:30+95*3.00,    d3:1.50, m2:3.00,  inst:100},
+  door:      {d2:796,           d3:1.00, m2:2.10,  inst:100},
+  hst:       {d2:1548,          d3:1.00, m2:5.50,  inst:110},
+  garage:    {d2:1800,          d3:1.00, m2:5.50,  inst:300},
+};
+// Garage: factory 1800 × 1.60 margin = 2880 + 300 inst = 3180 × 1.15 = 3657 → ~3400-4100 range ✓
+
+const MARGIN=t=>t<5000?1.60:t<10000?1.55:1.50;
+const OPT=1.10, CUP=1.15, RUP=1.20, IMIN=300;
+const COL={wit:0,buiten:9.26,beide:18.52};
+const VWIN=85;
+const ROL={voorzet:m2=>Math.max(130,95+47*m2),ingebouwd:m2=>Math.max(120,85+52*m2)};
+
+function typeLabel(t){
+  const m={
+    nl:{small:'Klein raam',medium:'Middelgroot raam',large:'Groot raam',
+        panoramic:'Panoramaraam',door:'Deur',hst:'Schuifpui',garage:'Garagedeur'},
+    fr:{small:'Petite fenêtre',medium:'Fenêtre moyenne',large:'Grande fenêtre',
+        panoramic:'Fenêtre panoramique',door:'Porte',hst:'Baie coulissante',garage:'Porte de garage'},
+    en:{small:'Small window',medium:'Medium window',large:'Large window',
+        panoramic:'Panoramic window',door:'Door',hst:'Sliding door',garage:'Garage door'}
+  };
+  const cl=(typeof currentLang!=='undefined')?currentLang:'nl';
+  return (m[cl]||m.nl)[t];
+}
+
+function calcPrice(){
+  // Use defaults if not yet selected
+  const profile = state.profile || 'budget';
+  const glass = state.glass || 'double';
+  let factWin=0,factRol=0,factColor=0,factVent=0,totalM2=0;
+  const breakdown=[];
+  Object.entries(state.counts).forEach(([type,cnt])=>{
+    if(!cnt) return;
+    const f=FACTORY[type];
+    let u=f.d2;
+    if(glass==='triple') u*=f.d3;
+    if(profile==='optimaal'&&type!=='garage') u*=OPT;
+    factWin+=u*cnt;
+    totalM2+=f.m2*cnt;
+    breakdown.push({name:typeLabel(type),cnt});
+    if(type!=='door'&&type!=='hst'&&type!=='garage'){
+      factColor+=COL[state.color]*f.m2*cnt;
+      if(state.vent==='ja') factVent+=VWIN*cnt;
+      if(state.rolluik!=='geen') factRol+=ROL[state.rolluik](f.m2)*cnt;
+    }
+  });
+  const tot=factWin+factColor+factVent+factRol;
+  const mg=MARGIN(tot);
+  const cw=Math.round(tot*mg);
+  const inst=Math.max(IMIN,Math.round(totalM2*100));
+  const netto=cw+inst;
+  const low=Math.round(netto*CUP/100)*100;
+  const high=Math.round(low*RUP/100)*100;
+  return {low,high,breakdown,totalM2:Math.round(totalM2*100)/100,install:inst};
+}
+
+function updatePrice(){
+  const p=calcPrice();
+  if(!p){document.getElementById('sticky-price').style.display='none';return;}
+  state.changes++;
+  document.getElementById('price-low').textContent=p.low.toLocaleString('nl-BE');
+  document.getElementById('price-high').textContent=p.high.toLocaleString('nl-BE');
+  const bR=Math.round(p.low*0.06),bN=Math.round(p.low*0.21);
+  document.getElementById('btw-reno-val').textContent='€'+(p.low+bR).toLocaleString('nl-BE')+' (incl. 6%)';
+  document.getElementById('btw-new-val').textContent='€'+(p.low+bN).toLocaleString('nl-BE')+' (incl. 21%)';
+  const lang = (typeof currentLang !== 'undefined') ? currentLang : 'nl';
+  const t=T[lang]||T['nl'];
+  let bd='';
+  p.breakdown.forEach(r=>{bd+='<div class="ps-row"><span>✓ '+r.name+' ×'+r.cnt+'</span></div>';});
+  if(state.color!=='wit') bd+='<div class="ps-row"><span>✓ '+t.color_label+'</span></div>';
+  if(state.vent==='ja') bd+='<div class="ps-row"><span>✓ '+t.vent_ja+'</span></div>';
+  if(state.rolluik!=='geen') bd+='<div class="ps-row"><span>✓ '+(state.rolluik==='voorzet'?t.rl_voorzet:t.rl_ingebouwd)+'</span></div>';
+  bd+='<div class="ps-row"><span>✓ '+t.bd_installation+' ('+p.totalM2+' m²)</span></div>';
+  bd+='<div class="ps-row"><span>'+t.bd_removal+'</span></div>';
+  bd+='<div class="ps-row total"><span>'+t.bd_total+'</span><span>€'+p.low.toLocaleString('nl-BE')+' – €'+p.high.toLocaleString('nl-BE')+'</span></div>';
+  document.getElementById('ps-breakdown').innerHTML=bd;
+  document.getElementById('sticky-low').textContent=p.low.toLocaleString('nl-BE');
+  document.getElementById('sticky-high').textContent=p.high.toLocaleString('nl-BE');
+  document.getElementById('sticky-price').style.display='flex';
+  // Show hint if defaults used
+  const hint=document.getElementById('ps-hint');
+  if(hint) hint.style.display=(!state.profile||!state.glass)?'block':'none';
+}
+
+function setStep(n){
+  const pct=Math.round((n/4)*100);
+  document.getElementById('progress-fill').style.width=pct+'%';
+  document.getElementById('pct-label').textContent=pct+'%';
+  document.getElementById('cur-step').textContent=n;
+  [1,2,3,4].forEach(i=>document.getElementById('ps'+i).className='p-step'+(i<n?' done':i===n?' active':''));
+}
+
+function selectType(t){
+  state.buildingType=t;
+  document.getElementById('btn-house').classList.toggle('selected',t==='house');
+  document.getElementById('btn-apart').classList.toggle('selected',t==='apart');
+  document.getElementById('floor-field').classList.toggle('visible',t==='apart');
+  checkStep1();
+}
+function selectFloor(n){
+  state.floor=n;
+  document.querySelectorAll('.floor-btn').forEach((b,i)=>b.classList.toggle('selected',i===n));
+  document.getElementById('lift-field').classList.toggle('visible',n>=3);
+  checkStep1();
+}
+function toggleLift(){
+  state.liftPresent=!state.liftPresent;
+  document.getElementById('lift-toggle').classList.toggle('on',state.liftPresent);
+}
+function selectBtw(t){
+  state.btwType=t;
+  document.getElementById('btn-renovatie').classList.toggle('selected',t==='renovatie');
+  document.getElementById('btn-nieuwbouw').classList.toggle('selected',t==='nieuwbouw');
+  checkStep1();
+}
+function checkStep1(){
+  const tel=document.getElementById('f-tel').value.trim();
+  const gem=document.getElementById('f-gemeente').value.trim();
+  const ok=tel.length>=8&&gem.length>=2&&state.buildingType&&state.btwType;
+  const btn=document.getElementById('step1-next');
+  btn.style.opacity=ok?'1':'0.4';
+  btn.style.pointerEvents=ok?'auto':'none';
+}
+function goStep2(){
+  const tel=document.getElementById('f-tel').value.trim();
+  const gem=document.getElementById('f-gemeente').value.trim();
+  if(!tel||!gem||!state.buildingType||!state.btwType){
+    document.getElementById('step1-error').style.display='block';return;
+  }
+  document.getElementById('step1-error').style.display='none';
+  document.getElementById('step2').style.display='block';
+  document.getElementById('step3').style.display='block';
+  document.getElementById('step4').style.display='block';
+  document.getElementById('detail-link').style.display='block';
+  setStep(2);
+}
+function changeCount(type,delta){
+  state.counts[type]=Math.max(0,state.counts[type]+delta);
+  document.getElementById('cv-'+type).textContent=state.counts[type];
+  document.getElementById('wr-'+type).classList.toggle('has-value',state.counts[type]>0);
+  const total=Object.values(state.counts).reduce((a,b)=>a+b,0);
+  document.getElementById('gift-badge').classList.toggle('visible',total>=1);
+  if(total>0){
+    document.getElementById('price-strip').style.display='block';
+    updatePrice();
+  } else {
+    document.getElementById('price-strip').style.display='none';
+    document.getElementById('sticky-price').style.display='none';
+  }
+}
+function selectProfile(p){
+  state.profile=p;
+  document.getElementById('pc-budget').classList.toggle('selected',p==='budget');
+  document.getElementById('pc-optimaal').classList.toggle('selected',p==='optimaal');
+  const total=Object.values(state.counts).reduce((a,b)=>a+b,0);
+  if(total>0){document.getElementById('price-strip').style.display='block';updatePrice();}
+  setStep(4);
+}
+function selectGlass(g){
+  state.glass=g;
+  document.getElementById('gc-double').classList.toggle('selected',g==='double');
+  document.getElementById('gc-triple').classList.toggle('selected',g==='triple');
+  const total=Object.values(state.counts).reduce((a,b)=>a+b,0);
+  if(total>0){document.getElementById('price-strip').style.display='block';updatePrice();}
+}
+function selectColor(c){
+  state.color=c;
+  ['wit','buiten','beide'].forEach(x=>document.getElementById('cc-'+x).classList.toggle('selected',x===c));
+  // SP online word
+  if(state.profile||Object.values(state.counts).some(v=>v>0)) updatePrice();
+}
+function selectRolluik(r){
+  state.rolluik=r;
+  ['geen','voorzet','ingebouwd'].forEach(x=>document.getElementById('rl-'+x).classList.toggle('selected',x===r));
+  // SP online word
+  if(state.profile||Object.values(state.counts).some(v=>v>0)) updatePrice();
+}
+function selectVent(v){
+  state.vent=v;
+  ['geen','ja'].forEach(x=>document.getElementById('vt-'+x).classList.toggle('selected',x===v));
+  // SP online word
+  if(state.profile||Object.values(state.counts).some(v=>v>0)) updatePrice();
+}
+function selectComm(el,val){
+  state.comm=val;
+  document.querySelectorAll('.comm-btn').forEach(b=>b.classList.remove('selected'));
+  el.classList.add('selected');
+}
+function toggleOptional(){
+  document.getElementById('optional-fields').classList.toggle('open');
+}
+function submitForm(){
+  const fn=document.getElementById('f-voornaam').value.trim();
+  const ln=document.getElementById('f-naam').value.trim();
+  const em=document.getElementById('f-email').value.trim();
+  if(!fn||!ln||!em){alert(T[currentLang].submit_err);return;}
+  const p=calcPrice();
+  console.log('LEAD',{voornaam:fn,naam:ln,tel:document.getElementById('f-tel').value,
+    email:em,gemeente:document.getElementById('f-gemeente').value,btwType:state.btwType,
+    buildingType:state.buildingType,floor:state.floor,counts:state.counts,
+    profile:state.profile,glass:state.glass,color:state.color,rolluik:state.rolluik,
+    vent:state.vent,comm:state.comm,notes:document.getElementById('f-notes')?.value,
+    priceLow:p?.low,priceHigh:p?.high,
+    timeMin:Math.round((Date.now()-state.startTime)/60000),changes:state.changes,
+    timing:document.getElementById('f-timing')?.value,
+    source:document.getElementById('f-source')?.value,lang:currentLang});
+  document.getElementById('conf-channel').textContent=
+    state.comm==='whatsapp'?'WhatsApp':state.comm==='email'?'e-mail':T[currentLang].comm_call;
+  document.querySelector('.lead-form').style.display='none';
+  document.getElementById('detail-link').style.display='none';
+  document.getElementById('sticky-price').style.display='none';
+  document.getElementById('price-strip').style.display='none';
+  document.getElementById('success-screen').classList.add('visible');
+  window.scrollTo({top:0,behavior:'smooth'});
+}
+
+function initIcons(){
+  const ICONS={'small':`<svg viewBox="0 0 64 64" fill="none" xmlns="http://www.w3.org/2000/svg"><rect x="9" y="9" width="46" height="46" stroke="currentColor" stroke-width="2" rx="1"/><rect x="12" y="12" width="40" height="40" stroke="currentColor" stroke-width="1.2"/><line x1="52" y1="12" x2="12" y2="32" stroke="currentColor" stroke-width="0.8" stroke-dasharray="2.5 2"/><line x1="12" y1="12" x2="32" y2="52" stroke="currentColor" stroke-width="0.8" stroke-dasharray="2.5 2"/></svg>`,'medium':`<svg viewBox="0 0 64 64" fill="none" xmlns="http://www.w3.org/2000/svg"><rect x="5" y="9" width="54" height="46" stroke="currentColor" stroke-width="2" rx="1"/><line x1="32" y1="9" x2="32" y2="55" stroke="currentColor" stroke-width="1.5"/><rect x="8" y="12" width="21" height="40" stroke="currentColor" stroke-width="1"/><rect x="35" y="12" width="21" height="40" stroke="currentColor" stroke-width="1"/><line x1="8" y1="12" x2="29" y2="32" stroke="currentColor" stroke-width="0.8" stroke-dasharray="2.5 2"/><line x1="29" y1="12" x2="18" y2="52" stroke="currentColor" stroke-width="0.8" stroke-dasharray="2.5 2"/></svg>`,'large':`<svg viewBox="0 0 64 64" fill="none" xmlns="http://www.w3.org/2000/svg"><rect x="3" y="9" width="58" height="46" stroke="currentColor" stroke-width="2" rx="1"/><line x1="22" y1="9" x2="22" y2="55" stroke="currentColor" stroke-width="1.5"/><line x1="42" y1="9" x2="42" y2="55" stroke="currentColor" stroke-width="1.5"/><rect x="6" y="12" width="13" height="40" stroke="currentColor" stroke-width="1"/><rect x="25" y="12" width="14" height="40" stroke="currentColor" stroke-width="1"/><rect x="45" y="12" width="13" height="40" stroke="currentColor" stroke-width="1"/><line x1="39" y1="12" x2="25" y2="32" stroke="currentColor" stroke-width="0.8" stroke-dasharray="2.5 2"/><line x1="25" y1="12" x2="32" y2="52" stroke="currentColor" stroke-width="0.8" stroke-dasharray="2.5 2"/></svg>`,'panoramic':`<svg viewBox="0 0 64 64" fill="none" xmlns="http://www.w3.org/2000/svg"><rect x="5" y="9" width="54" height="46" stroke="currentColor" stroke-width="2" rx="1"/><line x1="32" y1="9" x2="32" y2="55" stroke="currentColor" stroke-width="1.5"/><rect x="8" y="12" width="21" height="40" stroke="currentColor" stroke-width="1"/><rect x="35" y="12" width="21" height="40" stroke="currentColor" stroke-width="1"/></svg>`,'door':`<svg viewBox="0 0 64 64" fill="none" xmlns="http://www.w3.org/2000/svg"><rect x="14" y="5" width="36" height="56" stroke="currentColor" stroke-width="2" rx="1"/><rect x="17" y="8" width="30" height="49" stroke="currentColor" stroke-width="1"/><line x1="17" y1="57" x2="47" y2="57" stroke="currentColor" stroke-width="2"/><line x1="36" y1="29" x2="42" y2="32" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/><circle cx="42" cy="32" r="2" fill="currentColor"/></svg>`,'hst':`<svg viewBox="0 0 64 64" fill="none" xmlns="http://www.w3.org/2000/svg"><rect x="3" y="9" width="58" height="46" stroke="currentColor" stroke-width="2" rx="1"/><rect x="6" y="12" width="26" height="40" stroke="currentColor" stroke-width="1.2"/><rect x="33" y="12" width="25" height="40" stroke="currentColor" stroke-width="1.2"/><line x1="3" y1="55" x2="61" y2="55" stroke="currentColor" stroke-width="2"/><line x1="6" y1="32" x2="18" y2="32" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/><line x1="18" y1="28" x2="18" y2="36" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></svg>`,'garage':`<svg viewBox="0 0 64 64" fill="none" xmlns="http://www.w3.org/2000/svg"><rect x="5" y="10" width="54" height="48" stroke="currentColor" stroke-width="2" rx="1"/><line x1="5" y1="24" x2="59" y2="24" stroke="currentColor" stroke-width="1"/><line x1="5" y1="36" x2="59" y2="36" stroke="currentColor" stroke-width="1"/><line x1="5" y1="48" x2="59" y2="48" stroke="currentColor" stroke-width="1"/><line x1="14" y1="10" x2="14" y2="58" stroke="currentColor" stroke-width="0.8" stroke-dasharray="2 2"/><line x1="32" y1="10" x2="32" y2="58" stroke="currentColor" stroke-width="0.8" stroke-dasharray="2 2"/><line x1="50" y1="10" x2="50" y2="58" stroke="currentColor" stroke-width="0.8" stroke-dasharray="2 2"/><rect x="25" y="4" width="14" height="7" stroke="currentColor" stroke-width="1.2" rx="1"/></svg>`};
+  const map={
+    'wi-small':ICONS.small,'wi-medium':ICONS.medium,'wi-large':ICONS.large,
+    'wi-panoramic':ICONS.panoramic,'wi-door':ICONS.door,'wi-hst':ICONS.hst,'wi-garage':ICONS.garage
+  };
+  Object.entries(map).forEach(([id,svg])=>{const el=document.getElementById(id);if(el)el.innerHTML=svg;});
+}
+
+function initSP(){
+  let online=3+Math.floor(Math.random()*4);
+  const h=new Date().getHours();
+  let today=Math.min(2+Math.floor(h*.8),18);
+  let last=8+Math.floor(Math.random()*50);
+  function update(){
+    online=Math.max(1,Math.min(8,online+(Math.random()<.5?1:-1)));
+    document.getElementById('sp-online-num').textContent=online;
+    if(Math.random()<.3&&today<18) today++;
+    document.getElementById('sp-today').textContent=today;
+    if(Math.random()<.2) last=5+Math.floor(Math.random()*45);
+    else last=Math.min(240,last+Math.floor(Math.random()*3));
+    document.getElementById('sp-last').textContent=last<60?last+' min':Math.round(last/60)+' uur';
+  }
+  setInterval(update,45000+Math.random()*30000);
+}
+
+document.addEventListener('DOMContentLoaded',()=>{initSP();initIcons();});
+
+window.selectType=selectType;window.selectFloor=selectFloor;window.toggleLift=toggleLift;
+window.selectBtw=selectBtw;window.checkStep1=checkStep1;window.goStep2=goStep2;
+window.changeCount=changeCount;window.selectProfile=selectProfile;window.selectGlass=selectGlass;
+window.selectColor=selectColor;window.selectRolluik=selectRolluik;window.selectVent=selectVent;
+window.selectComm=selectComm;window.toggleOptional=toggleOptional;window.submitForm=submitForm;
+window.setLang=setLang;
+</script>
+</body>
+</html>
