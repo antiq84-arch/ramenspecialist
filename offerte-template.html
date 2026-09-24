@@ -736,7 +736,7 @@
 
 <div class="toolbar">
   <p>Klik op een <strong>gestippeld veld</strong> om in te vullen — herhaalde velden worden automatisch bijgewerkt. Logo en foto's: klik, sleep of plak (Ctrl+V). Posities toevoegen of verwijderen via de knoppen op de pagina. <span class="warn">PDF:</span> gebruik Chrome of Edge → Afdrukken → <strong>Bestemming: Opslaan als PDF</strong> → <strong>Geen marges</strong> → <strong>Achtergronden afdrukken: aan</strong>.</p>
-  <button class="print-btn" onclick="document.activeElement.blur(); window.print();">🖨 Opslaan als PDF</button>
+  <button class="print-btn" onclick="printOfferte()">🖨 Opslaan als PDF</button>
 </div>
 
 <input type="file" id="image-file-input" accept="image/*" style="display:none">
@@ -995,15 +995,15 @@
         <ol>
           <li><span class="num">1.</span><span><strong>Geldigheid en aanvaarding:</strong> Deze offerte is 14 kalenderdagen geldig. Ondertekening of betaling van het voorschot geldt als aanvaarding van de vooraf bezorgde offerte, specificaties en voorwaarden.</span></li>
           <li><span class="num">2.</span><span><strong>Betaling en planning:</strong> Niet-tijdige betaling kan levering en plaatsing uitstellen. Werkelijke bijkomende kosten voor opslag, transport of herplanning worden doorgerekend.</span></li>
-          <li><span class="num">3.</span><span><strong>Annulatie:</strong> Vóór productie worden uitgevoerde werken, bestelde materialen en gemaakte kosten aangerekend. Na start van maatwerkproductie geldt 60%; na levering of gereedmelding 90%, rekening houdend met de werkelijk geleden schade en toepasselijke wetgeving.</span></li>
+          <li><span class="num">3.</span><span><strong>Annulatie:</strong> Vóór productie worden uitgevoerde werken, bestelde materialen en gemaakte kosten aangerekend. Na start van maatwerkproductie geldt 60%; na levering of gereedmelding 90%, rekening houdend met de werkelijk geleden schade en toepasselijke wetgeving. Bij niet-nakoming door RamenSpecialist — zijnde het uitblijven van levering of het leveren van een wezenlijk onvolledig order zonder gegronde reden — heeft de klant recht op een gelijkwaardige vergoeding van dezelfde omvang.</span></li>
           <li><span class="num">4.</span><span><strong>Meerwerken:</strong> Niet vermelde werken zijn uitgesloten. Meerwerken worden vooraf schriftelijk goedgekeurd met hun prijs- en termijnimpact.</span></li>
           <li><span class="num">5.</span><span><strong>Werf en verborgen gebreken:</strong> Bestaande of verborgen gebreken, asbest, instabiele ondergrond en onvoorziene bouwkundige omstandigheden zijn niet inbegrepen en kunnen aanleiding geven tot een aanvullende offerte.</span></li>
           <li><span class="num">6.</span><span><strong>Oplevering:</strong> Zichtbare schade of opmerkingen worden in het opleveringsprotocol of binnen 7 kalenderdagen gemeld. Verborgen gebreken en dwingende wettelijke rechten blijven behouden. Kleine restpunten verhinderen de oplevering niet.</span></li>
           <li><span class="num">7.</span><span><strong>Garantie:</strong> Productgaranties gelden volgens de voorwaarden van de fabrikant; RamenSpecialist staat in voor de eigen montage. Commerciële garanties beperken de wettelijke consumentenrechten niet.</span></li>
-          <li><span class="num">8.</span><span><strong>Veiligheid:</strong> Waar vereist wordt veiligheidsglas of conforme valbeveiliging toegepast. Standaardglas is alleen mogelijk wanneer dit technisch en wettelijk is toegestaan.</span></li>
+          <li><span class="num">8.</span><span><strong>Veiligheid:</strong> Waar vereist wordt veiligheidsglas of conforme valbeveiliging toegepast. Dit kan de prijs verhogen. De klant kan alleen schriftelijk voor standaardglas of zonder valbeveiliging kiezen wanneer dit technisch en wettelijk is toegestaan.</span></li>
           <li><span class="num">9.</span><span><strong>BTW:</strong> 6% geldt voor een hoofdzakelijk privé gebruikte woning die minstens 10 jaar in gebruik is en aan alle wettelijke voorwaarden voldoet; anders geldt 21%. De klant bevestigt de juistheid van zijn gegevens.</span></li>
           <li><span class="num">10.</span><span><strong>Premies:</strong> Onze begeleiding en documenten zijn informatief. De klant blijft verantwoordelijk voor voorwaarden en aanvraag; toekenning en bedrag worden niet gegarandeerd.</span></li>
-          <li><span class="num">11.</span><span><strong>Maatwerk:</strong> Voor volgens klantspecificaties vervaardigde ramen en deuren geldt de wettelijke uitzondering op het herroepingsrecht (art. VI.53, 3° WER), voor zover toepasselijk.</span></li>
+          <li><span class="num">11.</span><span><strong>Maatwerk:</strong> Voor volgens klantspecificaties vervaardigde ramen en deuren geldt de wettelijke uitzondering op het herroepingsrecht (art. VI.53, 3° WER), voor zover toepasselijk. De klant verzoekt uitdrukkelijk om onmiddellijke start van de maatwerk productie en erkent hiermee afstand te doen van zijn herroepingsrecht conform art. VI.53, 1° en 3° WER. Na ontvangst van het voorschot is annulatie niet meer mogelijk.</span></li>
           <li><span class="num">12.</span><span><strong>Eigendom en recht:</strong> Goederen blijven, voor zover wettelijk toepasbaar, eigendom van RamenSpecialist tot volledige betaling. Belgisch recht is van toepassing; onopgeloste klachten kunnen naar de Consumentenombudsdienst.</span></li>
         </ol>
       </div>
@@ -1264,6 +1264,12 @@
     btn.removeAttribute('onclick');
     btn.addEventListener('click', function(){ removeModule(btn); });
   });
+
+  async function printOfferte(){
+    if(document.activeElement) document.activeElement.blur();
+    if(document.fonts && document.fonts.ready) await document.fonts.ready;
+    window.print();
+  }
 </script>
 </body>
 </html>
