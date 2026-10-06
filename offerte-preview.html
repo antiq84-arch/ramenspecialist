@@ -1,0 +1,274 @@
+<!DOCTYPE html>
+<html lang="nl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>OfferteCheck — Resultaat Preview</title>
+<style>
+  :root {
+    --ink: #0D0D0D;
+    --orange: #E8651A;
+    --bg: #F2EFE8;
+    --white: #ffffff;
+    --gray: #6b7280;
+    --border: #e5e7eb;
+    --green: #16a34a;
+    --yellow: #d97706;
+    --red: #dc2626;
+  }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body { font-family: 'Inter', -apple-system, sans-serif; background: var(--bg); color: var(--ink); font-size: 15px; line-height: 1.6; }
+
+  .header { background: var(--ink); color: white; padding: 18px 32px; display: flex; align-items: center; justify-content: space-between; }
+  .header .logo { font-size: 18px; font-weight: 700; }
+  .header .logo span { color: var(--orange); }
+  .header .tagline { font-size: 12px; color: #9ca3af; }
+
+  .hero { background: var(--ink); color: white; padding: 40px 32px 36px; text-align: center; }
+  .hero h1 { font-size: 30px; font-weight: 800; letter-spacing: -0.03em; margin-bottom: 8px; }
+  .hero h1 span { color: var(--orange); }
+  .hero p { color: #9ca3af; font-size: 14px; }
+
+  .container { max-width: 900px; margin: 0 auto; padding: 32px 20px 60px; }
+
+  .card { background: white; border-radius: 12px; padding: 28px 32px; margin-bottom: 20px; box-shadow: 0 1px 4px rgba(0,0,0,.07); }
+
+  .results-header h2 { font-size: 20px; font-weight: 800; margin-bottom: 4px; }
+  .results-header p { color: var(--gray); font-size: 13px; }
+  .badge { display: inline-block; background: #f0fdf4; color: var(--green); border: 1px solid #bbf7d0; border-radius: 20px; padding: 3px 12px; font-size: 12px; font-weight: 600; margin-left: 10px; vertical-align: middle; }
+
+  /* TABLE */
+  .table-wrap { overflow-x: auto; }
+  table { width: 100%; border-collapse: collapse; font-size: 13.5px; min-width: 600px; }
+  thead th { padding: 11px 16px; text-align: left; font-size: 11px; font-weight: 700; text-transform: uppercase; letter-spacing: .05em; color: var(--gray); border-bottom: 2px solid var(--border); background: #f9fafb; white-space: nowrap; }
+  thead th.our { background: #fff8f4; color: var(--orange); border-bottom: 2px solid var(--orange); }
+  tbody td { padding: 12px 16px; border-bottom: 1px solid var(--border); vertical-align: middle; }
+  tbody tr:last-child td { border-bottom: none; }
+  tbody td.param { font-weight: 600; color: var(--ink); font-size: 13px; white-space: nowrap; }
+  tbody td.our { background: #fffaf7; }
+  tbody tr:hover td { background: #f9fafb; }
+  tbody tr:hover td.our { background: #fff5ee; }
+
+  .val { color: #374151; margin-left: 4px; font-size: 13px; }
+  .val strong { color: var(--ink); }
+
+  /* tooltip */
+  [data-tip] { cursor: help; text-decoration: underline dotted #9ca3af; text-underline-offset: 3px; }
+
+  /* stars row */
+  .stars-row td { padding: 14px 16px; background: #f9fafb; font-weight: 700; }
+  .stars-row td.our { background: #fff8f4; }
+  .star-filled { color: var(--orange); }
+  .star-empty { color: #d1d5db; }
+
+  /* summary cards */
+  .summary-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 14px; margin-top: 0; }
+  .sc { border: 1.5px solid var(--border); border-radius: 10px; padding: 18px 20px; }
+  .sc.our { border-color: var(--orange); background: #fff8f4; }
+  .sc-label { font-size: 11px; font-weight: 700; text-transform: uppercase; letter-spacing: .05em; color: var(--gray); margin-bottom: 6px; }
+  .sc.our .sc-label { color: var(--orange); }
+  .sc-stars { font-size: 22px; margin-bottom: 8px; }
+  .sc-text { font-size: 12.5px; color: #4b5563; line-height: 1.55; }
+
+  /* CTA */
+  .cta { background: var(--ink); color: white; border-radius: 12px; padding: 32px; text-align: center; }
+  .cta h3 { font-size: 20px; font-weight: 800; margin-bottom: 6px; }
+  .cta p { color: #9ca3af; font-size: 14px; margin-bottom: 20px; }
+  .cta-btns { display: flex; gap: 12px; justify-content: center; flex-wrap: wrap; }
+  .btn-orange { padding: 13px 28px; background: var(--orange); color: white; border: none; border-radius: 8px; font-size: 15px; font-weight: 700; cursor: pointer; text-decoration: none; }
+  .btn-outline { padding: 13px 28px; background: transparent; color: white; border: 1.5px solid #4b5563; border-radius: 8px; font-size: 15px; font-weight: 600; cursor: pointer; text-decoration: none; }
+
+  @media(max-width:640px){
+    .summary-grid { grid-template-columns: 1fr; }
+    .hero h1 { font-size: 22px; }
+  }
+</style>
+</head>
+<body>
+
+<div class="header">
+  <div>
+    <div class="logo">Ramen<span>Specialist</span>.com</div>
+    <div class="tagline">A.F. Arthub BV · BTW BE 0803.940.651</div>
+  </div>
+  <div style="font-size:13px;color:#9ca3af;text-align:right;">+32 485 95 07 40<br>info@ramenspecialist.com</div>
+</div>
+
+<div class="hero">
+  <h1>Uw <span>OfferteCheck</span> is klaar</h1>
+  <p>Analyse voor Jan Willems · 2 offertes vergeleken · Antwerpen</p>
+</div>
+
+<div class="container">
+
+  <div class="card results-header">
+    <h2>Resultaten <span class="badge">✓ Analyse voltooid</span></h2>
+    <p style="margin-top:6px;">Wij analyseerden 2 offertes op 7 parameters. Hieronder ziet u een neutrale vergelijking — inclusief ons voorstel.</p>
+  </div>
+
+  <div class="card">
+    <div class="table-wrap">
+    <table>
+      <thead>
+        <tr>
+          <th style="width:130px;">Parameter</th>
+          <th>Offerte 1</th>
+          <th>Offerte 2</th>
+          <th class="our">⭐ Onze offerte</th>
+        </tr>
+      </thead>
+      <tbody>
+
+        <!-- PROFIEL -->
+        <tr>
+          <td class="param">Profiel</td>
+          <td>
+            ⚠️ <span class="val" data-tip="70mm is de minimale standaard — minder stabiel bij grote ramen">70mm, 2 afdichtingen</span>
+          </td>
+          <td>
+            ✅ <span class="val">76mm, 3 afdichtingen</span>
+          </td>
+          <td class="our">
+            ✅ <span class="val"><strong>70mm, 3 afdichtingen</strong><br><small style="color:#6b7280">Betere kwaliteit binnen zelfde klasse</small></span>
+          </td>
+        </tr>
+
+        <!-- BEGLAZING -->
+        <tr>
+          <td class="param">Beglazing</td>
+          <td>
+            ❌ <span class="val" data-tip="Dubbel glas voldoet niet meer aan moderne energienormen — Ug 1.0 of hoger">Dubbel glas<br><small style="color:#9ca3af">Ug niet vermeld</small></span>
+          </td>
+          <td>
+            ✅ <span class="val">Driedubbel<br><small style="color:#9ca3af">Ug 0.7 W/m²K</small></span>
+          </td>
+          <td class="our">
+            ✅ <span class="val"><strong>Driedubbel, Ug 0.6</strong><br><small style="color:#6b7280">+ veiligheidsglas binnen bij ramen &gt;1.5m²</small></span>
+          </td>
+        </tr>
+
+        <!-- BESLAG -->
+        <tr>
+          <td class="param">Beslag</td>
+          <td>
+            ⚠️ <span class="val" data-tip="Geen merknaam vermeld — kwaliteit onbekend">Niet gespecificeerd</span>
+          </td>
+          <td>
+            ✅ <span class="val">Kwalitatief merk<br><small style="color:#9ca3af">Gecertificeerd</small></span>
+          </td>
+          <td class="our">
+            ✅ <span class="val"><strong>Gecertificeerd Europees beslag</strong><br><small style="color:#6b7280">Anti-inbraak RC2 optie beschikbaar</small></span>
+          </td>
+        </tr>
+
+        <!-- GARANTIE -->
+        <tr>
+          <td class="param">Garantie</td>
+          <td>
+            ❌ <span class="val" data-tip="2 jaar is wettelijk minimum — geeft weinig bescherming bij verborgen gebreken">2 jaar</span>
+          </td>
+          <td>
+            ⚠️ <span class="val">3 jaar totaal<br><small style="color:#9ca3af">Montage niet apart vermeld</small></span>
+          </td>
+          <td class="our">
+            ✅ <span class="val"><strong>5 jaar montage</strong><br><small style="color:#6b7280">+ fabrieksgarantie profiel &amp; glas</small></span>
+          </td>
+        </tr>
+
+        <!-- LEVERTIJD -->
+        <tr>
+          <td class="param">Levertijd</td>
+          <td>
+            ❌ <span class="val" data-tip="8–10 weken is lang — verhoogt risico op vertragingen bij uw verbouwing">8–10 weken</span>
+          </td>
+          <td>
+            ⚠️ <span class="val">5–6 weken</span>
+          </td>
+          <td class="our">
+            ✅ <span class="val"><strong>3–5 weken</strong><br><small style="color:#6b7280">Geplaatst binnen afgesproken termijn</small></span>
+          </td>
+        </tr>
+
+        <!-- PRIJS -->
+        <tr>
+          <td class="param">Prijs</td>
+          <td>
+            ⚠️ <span class="val">€ 8.450 totaal<br><small style="color:#9ca3af">≈ €1.690 / raam</small></span>
+          </td>
+          <td>
+            ⚠️ <span class="val">€ 9.200 totaal<br><small style="color:#9ca3af">≈ €1.840 / raam</small></span>
+          </td>
+          <td class="our">
+            ✅ <span class="val"><strong>€ 8.600 – 9.400</strong><br><small style="color:#6b7280">Vergelijkbaar — betere specs inbegrepen</small></span>
+          </td>
+        </tr>
+
+        <!-- BTW -->
+        <tr>
+          <td class="param">BTW</td>
+          <td>
+            ✅ <span class="val">6% (renovatie)</span>
+          </td>
+          <td>
+            ❌ <span class="val" data-tip="21% BTW betekent dat u €1.400 meer betaalt zonder extra waarde">21% — reden niet vermeld</span>
+          </td>
+          <td class="our">
+            ✅ <span class="val"><strong>6% indien van toepassing</strong><br><small style="color:#6b7280">Wij controleren uw situatie gratis</small></span>
+          </td>
+        </tr>
+
+        <!-- STARS -->
+        <tr class="stars-row">
+          <td class="param">Beoordeling</td>
+          <td>
+            <span class="star-filled">★★</span><span class="star-empty">★★★</span>
+            <div style="font-size:11px;color:#6b7280;font-weight:400;margin-top:2px;">2 / 5</div>
+          </td>
+          <td>
+            <span class="star-filled">★★★★</span><span class="star-empty">★</span>
+            <div style="font-size:11px;color:#6b7280;font-weight:400;margin-top:2px;">4 / 5</div>
+          </td>
+          <td class="our">
+            <span class="star-filled">★★★★★</span>
+            <div style="font-size:11px;color:var(--orange);font-weight:400;margin-top:2px;">5 / 5</div>
+          </td>
+        </tr>
+
+      </tbody>
+    </table>
+    </div>
+  </div>
+
+  <!-- SUMMARY CARDS -->
+  <div class="summary-grid" style="margin-bottom:20px;">
+    <div class="sc">
+      <div class="sc-label">Offerte 1</div>
+      <div class="sc-stars"><span class="star-filled">★★</span><span class="star-empty">★★★</span></div>
+      <div class="sc-text">Goedkoopste optie, maar dubbel glas, korte garantie en lange levertijd zijn risico's. BTW correct op 6%.</div>
+    </div>
+    <div class="sc">
+      <div class="sc-label">Offerte 2</div>
+      <div class="sc-stars"><span class="star-filled">★★★★</span><span class="star-empty">★</span></div>
+      <div class="sc-text">Goed profiel en driedubbel glas. Nadeel: 21% BTW zonder uitleg en beslag niet gespecificeerd. Duurste van de twee.</div>
+    </div>
+    <div class="sc our">
+      <div class="sc-label">⭐ Onze offerte</div>
+      <div class="sc-stars"><span class="star-filled">★★★★★</span></div>
+      <div class="sc-text">Zelfde prijsklasse als offerte 2 — maar met 5 jaar garantie, snellere levering, veiligheidsglas bij grote ramen en 6% BTW.</div>
+    </div>
+  </div>
+
+  <!-- CTA -->
+  <div class="cta">
+    <h3>Klaar voor ons voorstel?</h3>
+    <p>Op basis van deze analyse maken wij een offerte die beter is — zonder meerprijs.</p>
+    <div class="cta-btns">
+      <a href="tel:+32485950740" class="btn-orange">📞 Bel ons nu</a>
+      <a href="https://wa.me/32485950740" class="btn-outline">💬 WhatsApp</a>
+    </div>
+    <div style="margin-top:14px;font-size:12px;color:#6b7280;">Wij reageren binnen 15 minuten · Gratis advies · Geen verplichtingen</div>
+  </div>
+
+</div>
+</body>
+</html>
