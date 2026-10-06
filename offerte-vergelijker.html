@@ -1,0 +1,474 @@
+<!DOCTYPE html>
+<html lang="nl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>OfferteCheck — RamenSpecialist.com</title>
+<style>
+  :root {
+    --ink: #0D0D0D;
+    --orange: #E8651A;
+    --bg: #F2EFE8;
+    --white: #ffffff;
+    --gray: #6b7280;
+    --border: #e5e7eb;
+    --green: #16a34a;
+    --yellow: #d97706;
+    --red: #dc2626;
+  }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body { font-family: 'Inter', -apple-system, sans-serif; background: var(--bg); color: var(--ink); font-size: 15px; line-height: 1.6; }
+
+  /* HEADER */
+  .header { background: var(--ink); color: white; padding: 18px 32px; display: flex; align-items: center; justify-content: space-between; }
+  .header .logo { font-size: 18px; font-weight: 700; letter-spacing: -0.02em; }
+  .header .logo span { color: var(--orange); }
+  .header .tagline { font-size: 12px; color: #9ca3af; }
+
+  /* HERO */
+  .hero { background: var(--ink); color: white; padding: 56px 32px 48px; text-align: center; }
+  .hero h1 { font-size: 34px; font-weight: 800; letter-spacing: -0.03em; margin-bottom: 12px; }
+  .hero h1 span { color: var(--orange); }
+  .hero p { color: #9ca3af; font-size: 16px; max-width: 520px; margin: 0 auto; }
+
+  /* CONTAINER */
+  .container { max-width: 860px; margin: 0 auto; padding: 40px 20px; }
+
+  /* CARD */
+  .card { background: white; border-radius: 12px; padding: 32px; margin-bottom: 24px; box-shadow: 0 1px 4px rgba(0,0,0,.07); }
+  .card h2 { font-size: 17px; font-weight: 700; margin-bottom: 20px; display: flex; align-items: center; gap: 10px; }
+  .card h2 .step { background: var(--orange); color: white; width: 26px; height: 26px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 13px; font-weight: 700; flex-shrink: 0; }
+
+  /* FORM */
+  .form-row { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; margin-bottom: 14px; }
+  .form-row.single { grid-template-columns: 1fr; }
+  label { display: block; font-size: 12px; font-weight: 600; color: var(--gray); margin-bottom: 5px; text-transform: uppercase; letter-spacing: .04em; }
+  input, select { width: 100%; padding: 11px 14px; border: 1.5px solid var(--border); border-radius: 8px; font-size: 14px; font-family: inherit; color: var(--ink); background: white; transition: border-color .15s; }
+  input:focus, select:focus { outline: none; border-color: var(--orange); }
+
+  /* UPLOAD */
+  .upload-area { border: 2px dashed var(--border); border-radius: 10px; padding: 28px; text-align: center; cursor: pointer; transition: all .2s; background: #fafafa; }
+  .upload-area:hover, .upload-area.drag-over { border-color: var(--orange); background: #fff8f4; }
+  .upload-area svg { width: 36px; height: 36px; color: var(--orange); margin-bottom: 10px; }
+  .upload-area p { font-size: 14px; color: var(--gray); }
+  .upload-area strong { color: var(--ink); }
+  #file-input { display: none; }
+
+  /* FILE LIST */
+  .file-list { margin-top: 14px; display: flex; flex-direction: column; gap: 8px; }
+  .file-item { display: flex; align-items: center; gap: 10px; background: #f9fafb; border: 1px solid var(--border); border-radius: 8px; padding: 10px 14px; font-size: 13px; }
+  .file-item .file-icon { color: var(--orange); flex-shrink: 0; }
+  .file-item .file-name { flex: 1; font-weight: 500; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+  .file-item .remove-btn { background: none; border: none; cursor: pointer; color: #9ca3af; font-size: 16px; padding: 0 4px; }
+  .file-item .remove-btn:hover { color: var(--red); }
+  .file-count { font-size: 12px; color: var(--gray); margin-top: 6px; }
+
+  /* BTN */
+  .btn { display: block; width: 100%; padding: 16px; background: var(--orange); color: white; border: none; border-radius: 10px; font-size: 16px; font-weight: 700; cursor: pointer; transition: all .2s; letter-spacing: -.01em; }
+  .btn:hover { background: #d4581a; transform: translateY(-1px); }
+  .btn:disabled { background: #9ca3af; cursor: not-allowed; transform: none; }
+
+  /* LOADING */
+  .loading { text-align: center; padding: 48px; }
+  .spinner { width: 40px; height: 40px; border: 3px solid var(--border); border-top-color: var(--orange); border-radius: 50%; animation: spin .8s linear infinite; margin: 0 auto 16px; }
+  @keyframes spin { to { transform: rotate(360deg); } }
+  .loading p { color: var(--gray); font-size: 14px; }
+
+  /* RESULTS */
+  #results { display: none; }
+  .results-header { margin-bottom: 28px; }
+  .results-header h2 { font-size: 22px; font-weight: 800; margin-bottom: 6px; }
+  .results-header p { color: var(--gray); font-size: 14px; }
+
+  /* TABLE */
+  .compare-table { width: 100%; border-collapse: collapse; font-size: 13.5px; }
+  .compare-table th { padding: 12px 16px; text-align: left; font-size: 11px; font-weight: 700; text-transform: uppercase; letter-spacing: .05em; color: var(--gray); border-bottom: 2px solid var(--border); background: #f9fafb; }
+  .compare-table th.our { background: #fff8f4; color: var(--orange); border-bottom-color: var(--orange); }
+  .compare-table td { padding: 13px 16px; border-bottom: 1px solid var(--border); vertical-align: top; }
+  .compare-table tr:last-child td { border-bottom: none; }
+  .compare-table td.param { font-weight: 600; color: var(--ink); font-size: 13px; width: 130px; }
+  .compare-table td.our-col { background: #fffaf7; }
+  .compare-table tr:hover td { background: #f9fafb; }
+  .compare-table tr:hover td.our-col { background: #fff5ee; }
+
+  /* ICONS */
+  .icon-ok  { color: var(--green); font-size: 16px; }
+  .icon-warn{ color: var(--yellow); font-size: 16px; }
+  .icon-bad { color: var(--red); font-size: 16px; }
+
+  /* STARS ROW */
+  .stars-row td { padding: 16px; font-weight: 700; font-size: 15px; background: #f9fafb; }
+  .stars-row td.our-col { background: #fff8f4; }
+  .stars { color: var(--orange); letter-spacing: 2px; }
+  .stars-empty { color: #d1d5db; }
+
+  /* SUMMARY CARDS */
+  .summary-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 14px; margin-top: 24px; }
+  .summary-card { border: 1.5px solid var(--border); border-radius: 10px; padding: 16px 18px; }
+  .summary-card.our { border-color: var(--orange); background: #fff8f4; }
+  .summary-card .sc-label { font-size: 11px; font-weight: 700; text-transform: uppercase; color: var(--gray); letter-spacing: .05em; margin-bottom: 6px; }
+  .summary-card.our .sc-label { color: var(--orange); }
+  .summary-card .sc-stars { font-size: 20px; margin-bottom: 4px; }
+  .summary-card .sc-note { font-size: 12px; color: var(--gray); line-height: 1.5; }
+
+  /* CTA */
+  .cta-block { background: var(--ink); color: white; border-radius: 12px; padding: 32px; text-align: center; margin-top: 32px; }
+  .cta-block h3 { font-size: 20px; font-weight: 800; margin-bottom: 8px; }
+  .cta-block p { color: #9ca3af; font-size: 14px; margin-bottom: 20px; }
+  .cta-btn { display: inline-block; padding: 14px 32px; background: var(--orange); color: white; border: none; border-radius: 8px; font-size: 15px; font-weight: 700; cursor: pointer; text-decoration: none; transition: background .2s; }
+  .cta-btn:hover { background: #d4581a; }
+
+  /* ERROR */
+  .error-msg { background: #fef2f2; border: 1px solid #fecaca; border-radius: 8px; padding: 14px 16px; color: var(--red); font-size: 14px; margin-top: 12px; display: none; }
+
+  @media (max-width: 600px) {
+    .form-row { grid-template-columns: 1fr; }
+    .hero h1 { font-size: 26px; }
+    .compare-table { font-size: 12px; }
+    .compare-table td, .compare-table th { padding: 10px 10px; }
+    .compare-table td.param { width: 90px; }
+  }
+</style>
+</head>
+<body>
+
+<div class="header">
+  <div>
+    <div class="logo">Ramen<span>Specialist</span>.com</div>
+    <div class="tagline">A.F. Arthub BV · BTW BE 0803.940.651</div>
+  </div>
+  <div style="font-size:13px;color:#9ca3af;text-align:right;">+32 485 95 07 40<br>info@ramenspecialist.com</div>
+</div>
+
+<div class="hero">
+  <h1>Gratis <span>OfferteCheck</span></h1>
+  <p>Upload uw offertes. Wij analyseren kwaliteit, garanties en prijs — en tonen wat wij beter kunnen doen.</p>
+</div>
+
+<div class="container">
+
+  <!-- STEP 1: CONTACT -->
+  <div class="card" id="form-card">
+    <h2><span class="step">1</span> Uw gegevens</h2>
+    <div class="form-row">
+      <div>
+        <label>Naam *</label>
+        <input type="text" id="f-naam" placeholder="Jan Janssen">
+      </div>
+      <div>
+        <label>Telefoon *</label>
+        <input type="tel" id="f-tel" placeholder="+32 4xx xx xx xx">
+      </div>
+    </div>
+    <div class="form-row">
+      <div>
+        <label>E-mail</label>
+        <input type="email" id="f-email" placeholder="jan@voorbeeld.be">
+      </div>
+      <div>
+        <label>Gemeente</label>
+        <input type="text" id="f-gemeente" placeholder="Antwerpen">
+      </div>
+    </div>
+
+    <h2 style="margin-top:28px;"><span class="step">2</span> Upload uw offertes (max. 5 PDF)</h2>
+
+    <div class="upload-area" id="upload-area" onclick="document.getElementById('file-input').click()">
+      <svg fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24">
+        <path stroke-linecap="round" stroke-linejoin="round" d="M3 16.5v2.25A2.25 2.25 0 005.25 21h13.5A2.25 2.25 0 0021 18.75V16.5m-13.5-9L12 3m0 0l4.5 4.5M12 3v13.5"/>
+      </svg>
+      <p><strong>Klik om bestanden te selecteren</strong><br>of sleep PDF-bestanden hierheen</p>
+    </div>
+    <input type="file" id="file-input" accept=".pdf" multiple>
+    <div class="file-list" id="file-list"></div>
+    <div class="file-count" id="file-count"></div>
+
+    <div class="error-msg" id="error-msg"></div>
+
+    <button class="btn" id="analyse-btn" onclick="startAnalyse()" style="margin-top:24px;">
+      🔍 Analyseer mijn offertes
+    </button>
+  </div>
+
+  <!-- LOADING -->
+  <div class="card loading" id="loading-card" style="display:none;">
+    <div class="spinner"></div>
+    <p>Uw offertes worden geanalyseerd…<br>Dit duurt ongeveer 20–40 seconden.</p>
+  </div>
+
+  <!-- RESULTS -->
+  <div id="results">
+    <div class="results-header card">
+      <h2 style="font-size:22px;margin-bottom:6px;">Resultaten OfferteCheck</h2>
+      <p id="results-subtitle" style="color:#6b7280;font-size:14px;"></p>
+    </div>
+
+    <div class="card" style="overflow-x:auto;">
+      <table class="compare-table" id="compare-table">
+        <!-- filled by JS -->
+      </table>
+    </div>
+
+    <div class="summary-grid" id="summary-grid"></div>
+
+    <div class="cta-block">
+      <h3>Ontvang onze offerte</h3>
+      <p>Op basis van deze analyse maken wij een voorstel dat beter is — voor een vergelijkbare prijs.</p>
+      <a href="tel:+32485950740" class="cta-btn">📞 Bel ons: +32 485 95 07 40</a>
+      <div style="margin-top:12px;font-size:13px;color:#6b7280;">Of stuur ons een WhatsApp — wij reageren binnen 15 minuten.</div>
+    </div>
+  </div>
+
+</div>
+
+<script>
+const FILES = [];
+
+// DRAG & DROP
+const uploadArea = document.getElementById('upload-area');
+uploadArea.addEventListener('dragover', e => { e.preventDefault(); uploadArea.classList.add('drag-over'); });
+uploadArea.addEventListener('dragleave', () => uploadArea.classList.remove('drag-over'));
+uploadArea.addEventListener('drop', e => {
+  e.preventDefault();
+  uploadArea.classList.remove('drag-over');
+  handleFiles([...e.dataTransfer.files]);
+});
+document.getElementById('file-input').addEventListener('change', e => handleFiles([...e.target.files]));
+
+function handleFiles(newFiles) {
+  newFiles.forEach(f => {
+    if (!f.name.toLowerCase().endsWith('.pdf')) return;
+    if (FILES.length >= 5) return;
+    if (FILES.find(x => x.name === f.name)) return;
+    FILES.push(f);
+  });
+  renderFileList();
+}
+
+function renderFileList() {
+  const list = document.getElementById('file-list');
+  const count = document.getElementById('file-count');
+  list.innerHTML = FILES.map((f, i) => `
+    <div class="file-item">
+      <span class="file-icon">📄</span>
+      <span class="file-name">${f.name}</span>
+      <span style="color:#6b7280;font-size:12px;">${(f.size/1024).toFixed(0)} KB</span>
+      <button class="remove-btn" onclick="removeFile(${i})">×</button>
+    </div>`).join('');
+  count.textContent = FILES.length > 0 ? `${FILES.length} van max. 5 bestanden geselecteerd` : '';
+}
+
+function removeFile(i) {
+  FILES.splice(i, 1);
+  renderFileList();
+}
+
+function showError(msg) {
+  const el = document.getElementById('error-msg');
+  el.textContent = msg;
+  el.style.display = 'block';
+}
+function hideError() {
+  document.getElementById('error-msg').style.display = 'none';
+}
+
+async function fileToBase64(file) {
+  return new Promise((res, rej) => {
+    const r = new FileReader();
+    r.onload = () => res(r.result.split(',')[1]);
+    r.onerror = rej;
+    r.readAsDataURL(file);
+  });
+}
+
+async function startAnalyse() {
+  hideError();
+  const naam = document.getElementById('f-naam').value.trim();
+  const tel  = document.getElementById('f-tel').value.trim();
+  if (!naam) { showError('Gelieve uw naam in te vullen.'); return; }
+  if (!tel)  { showError('Gelieve uw telefoonnummer in te vullen.'); return; }
+  if (FILES.length === 0) { showError('Upload minstens één offerte als PDF.'); return; }
+
+  document.getElementById('form-card').style.display = 'none';
+  document.getElementById('loading-card').style.display = 'block';
+
+  try {
+    const contentParts = [];
+    for (let i = 0; i < FILES.length; i++) {
+      const b64 = await fileToBase64(FILES[i]);
+      contentParts.push({
+        type: 'document',
+        source: { type: 'base64', media_type: 'application/pdf', data: b64 }
+      });
+      contentParts.push({
+        type: 'text',
+        text: `Dit is Offerte ${i + 1} (bestandsnaam: ${FILES[i].name}).`
+      });
+    }
+
+    const N = FILES.length;
+    const offerteLabels = Array.from({length: N}, (_, i) => `Offerte ${i+1}`);
+
+    contentParts.push({
+      type: 'text',
+      text: `
+Je bent een onafhankelijke ramen- en deurenadviseur. Analyseer de ${N} offertes hierboven.
+Noem de bedrijven NIET bij naam — gebruik alleen "Offerte 1", "Offerte 2" etc.
+
+Geef je antwoord UITSLUITEND als geldig JSON (geen uitleg, geen markdown, geen backticks), in dit exacte formaat:
+
+{
+  "offertes": [
+    {
+      "label": "Offerte 1",
+      "parameters": {
+        "profiel": { "waarde": "...", "score": "ok|warn|bad", "toelichting": "..." },
+        "beglazing": { "waarde": "...", "score": "ok|warn|bad", "toelichting": "..." },
+        "beslag": { "waarde": "...", "score": "ok|warn|bad", "toelichting": "..." },
+        "garantie": { "waarde": "...", "score": "ok|warn|bad", "toelichting": "..." },
+        "levertijd": { "waarde": "...", "score": "ok|warn|bad", "toelichting": "..." },
+        "prijs": { "waarde": "...", "score": "ok|warn|bad", "toelichting": "..." },
+        "btw": { "waarde": "...", "score": "ok|warn|bad", "toelichting": "..." }
+      },
+      "sterren": 3,
+      "samenvatting": "Korte neutrale samenvatting van sterk en zwak."
+    }
+  ],
+  "onze_offerte": {
+    "label": "Onze offerte",
+    "parameters": {
+      "profiel": { "waarde": "...", "score": "ok" },
+      "beglazing": { "waarde": "...", "score": "ok" },
+      "beslag": { "waarde": "...", "score": "ok" },
+      "garantie": { "waarde": "5 jaar montage · fabrieksgarantie", "score": "ok" },
+      "levertijd": { "waarde": "3–5 weken", "score": "ok" },
+      "prijs": { "waarde": "Vergelijkbaar of iets hoger", "score": "ok" },
+      "btw": { "waarde": "6% (renovatie) / 21% (nieuwbouw)", "score": "ok" }
+    },
+    "sterren": 5,
+    "samenvatting": "Gebaseerd op wat ontbreekt in de andere offertes, adviseer je hier een betere configuratie voor RamenSpecialist. Bv als offerte X profiel 70mm heeft, adviseer dan 70mm met 3 richtingsafdichtingen. Als beglazing dubbel is, adviseer driedubbel. Als grote ramen: veiligheidsglas binnenin. Geen merknamen noemen."
+  }
+}
+
+Regels:
+- profiel: noteer alleen mm en aantal afdichtingen (bv "70mm, 2 afdichtingen")
+- beglazing: Ug-waarde indien vermeld, anders "dubbel" of "driedubbel"
+- beslag: merk of "niet gespecificeerd"
+- garantie: jaren
+- levertijd: weken
+- prijs: totaal + prijs per raam indien deelbaar
+- score "ok" = goed, "warn" = matig/ontbreekt, "bad" = slecht/ontbreekt volledig
+- sterren: 1–5 gehele getallen
+- Onze offerte: altijd minstens even goed of beter dan de beste offerte, nooit merknamen
+`
+    });
+
+    const response = await fetch('https://api.anthropic.com/v1/messages', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        model: 'claude-sonnet-4-6',
+        max_tokens: 2000,
+        messages: [{ role: 'user', content: contentParts }]
+      })
+    });
+
+    const data = await response.json();
+    const raw = data.content?.find(b => b.type === 'text')?.text || '';
+
+    // Extract JSON
+    const jsonMatch = raw.match(/\{[\s\S]*\}/);
+    if (!jsonMatch) throw new Error('Geen geldige analyse ontvangen.');
+    const result = JSON.parse(jsonMatch[0]);
+
+    document.getElementById('loading-card').style.display = 'none';
+    renderResults(result, naam);
+
+  } catch(err) {
+    document.getElementById('loading-card').style.display = 'none';
+    document.getElementById('form-card').style.display = 'block';
+    showError('Er is iets misgegaan bij de analyse. Probeer opnieuw of neem contact op: +32 485 95 07 40');
+    console.error(err);
+  }
+}
+
+const PARAM_LABELS = {
+  profiel: 'Profiel',
+  beglazing: 'Beglazing',
+  beslag: 'Beslag',
+  garantie: 'Garantie',
+  levertijd: 'Levertijd',
+  prijs: 'Prijs',
+  btw: 'BTW'
+};
+
+const ICONS = { ok: '✅', warn: '⚠️', bad: '❌' };
+
+function renderResults(data, naam) {
+  document.getElementById('results-subtitle').textContent =
+    `Analyse voor ${naam} · ${FILES.length} offerte${FILES.length>1?'s':''} vergeleken`;
+
+  const allOffertes = [...data.offertes, data.onze_offerte];
+  const params = Object.keys(PARAM_LABELS);
+
+  // Build table
+  const table = document.getElementById('compare-table');
+  let html = '<thead><tr><th>Parameter</th>';
+  data.offertes.forEach(o => { html += `<th>${o.label}</th>`; });
+  html += `<th class="our">⭐ Onze offerte</th></tr></thead><tbody>`;
+
+  params.forEach(p => {
+    html += `<tr><td class="param">${PARAM_LABELS[p]}</td>`;
+    data.offertes.forEach(o => {
+      const par = o.parameters[p];
+      const icon = ICONS[par?.score] || '—';
+      const val = par?.waarde || '—';
+      const tip = par?.toelichting ? ` title="${par.toelichting}"` : '';
+      html += `<td${tip}>${icon} <span style="color:#374151">${val}</span></td>`;
+    });
+    // Our column
+    const ourPar = data.onze_offerte.parameters[p];
+    html += `<td class="our-col">${ICONS[ourPar?.score]||'✅'} <strong style="color:#0D0D0D">${ourPar?.waarde||'—'}</strong></td>`;
+    html += `</tr>`;
+  });
+
+  // Stars row
+  html += `<tr class="stars-row"><td class="param" style="font-weight:700;">Beoordeling</td>`;
+  data.offertes.forEach(o => {
+    html += `<td>${renderStars(o.sterren)}</td>`;
+  });
+  html += `<td class="our-col">${renderStars(data.onze_offerte.sterren)}</td></tr>`;
+
+  html += '</tbody>';
+  table.innerHTML = html;
+
+  // Summary cards
+  const grid = document.getElementById('summary-grid');
+  let cards = '';
+  data.offertes.forEach(o => {
+    cards += `
+      <div class="summary-card">
+        <div class="sc-label">${o.label}</div>
+        <div class="sc-stars">${renderStars(o.sterren)}</div>
+        <div class="sc-note">${o.samenvatting}</div>
+      </div>`;
+  });
+  cards += `
+    <div class="summary-card our">
+      <div class="sc-label">⭐ Onze offerte</div>
+      <div class="sc-stars">${renderStars(data.onze_offerte.sterren)}</div>
+      <div class="sc-note">${data.onze_offerte.samenvatting}</div>
+    </div>`;
+  grid.innerHTML = cards;
+
+  document.getElementById('results').style.display = 'block';
+  document.getElementById('results').scrollIntoView({ behavior: 'smooth' });
+}
+
+function renderStars(n) {
+  const full = Math.round(Math.max(1, Math.min(5, n)));
+  return '★'.repeat(full) + '<span style="color:#d1d5db">★</span>'.repeat(5 - full);
+}
+</script>
+</body>
+</html>
