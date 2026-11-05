@@ -116,6 +116,7 @@ const assumptions = {
 return [{
   json: {
     ok: true,
+    calculation_id: request.request_id || null,
     currency: 'EUR',
     vat_rate: vatRate,
     price_low_incl_vat: low,
