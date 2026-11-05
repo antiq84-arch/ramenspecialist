@@ -63,7 +63,7 @@ for (const product of products) {
   productCost += unitCost * quantity;
   totalArea += area * quantity;
   if (['tilt_turn', 'two_sash', 'three_sash', 'sliding'].includes(product.type)) openingUnits += quantity;
-  if (['panoramic_fixed', 'sliding', 'door'].includes(product.type)) manualReview = true;
+  if (['panoramic_fixed', 'sliding', 'door', 'garage'].includes(product.type)) manualReview = true;
 }
 
 const shutterQuantity = positiveInteger(request.options?.shutter_quantity);
