@@ -81,18 +81,17 @@ if (request.options?.ventilation) {
   productCost += Number(config.ventilation_each || 0) * Math.max(1, openingUnits);
 }
 
-// Gross-margin targets are configured privately per proposition.
-// Coefficient = 1 / (1 - gross margin), e.g. 42.5% => 1.73913.
+// Mark-up ranges are configured privately per proposition.
+// Example: factory cost 100 with 50% mark-up becomes 150.
 const profile = request.options?.profile === 'optimal' ? 'optimal' : 'budget';
-const commercialCoefficient = Number(
-  profile === 'optimal'
-    ? config.commercial_coefficient_optimal || config.commercial_coefficient
-    : config.commercial_coefficient_budget || config.commercial_coefficient
-);
-if (!Number.isFinite(commercialCoefficient) || commercialCoefficient < 1) {
-  throw new Error(`Commercial coefficient is missing for profile: ${profile}`);
+const markupLow = Number(profile === 'optimal' ? config.markup_optimal_low : config.markup_budget_low);
+const markupHigh = Number(profile === 'optimal' ? config.markup_optimal_high : config.markup_budget_high);
+if (![markupLow, markupHigh].every(value => Number.isFinite(value) && value >= 0) || markupHigh < markupLow) {
+  throw new Error(`Commercial mark-up range is missing for profile: ${profile}`);
 }
-const commercialProducts = productCost * commercialCoefficient;
+const commercialProductsLow = productCost * (1 + markupLow);
+const commercialProductsHigh = productCost * (1 + markupHigh);
+const logisticsAndWarehouse = Number(config.logistics_and_warehouse_flat || 350);
 const placement = Math.max(totalArea * 130, 350);
 const projectSurcharge = request.project?.building_type === 'apartment' && Number(request.project.floor) >= 2 && !request.project.lift
   ? Number(config.upper_floor_review_allowance || 0)
@@ -102,11 +101,11 @@ if (projectSurcharge > 0 || request.project?.building_type === 'apartment' && Nu
   manualReview = true;
 }
 
-const subtotalExclVat = commercialProducts + placement + projectSurcharge;
+const subtotalLowExclVat = commercialProductsLow + logisticsAndWarehouse + placement + projectSurcharge;
+const subtotalHighExclVat = commercialProductsHigh + logisticsAndWarehouse + placement + projectSurcharge;
 const vatRate = request.project.vat_choice === 'renovation_6' ? 0.06 : 0.21;
-const estimateInclVat = subtotalExclVat * (1 + vatRate);
-const low = round50(estimateInclVat * 0.93);
-const high = round50(estimateInclVat * 1.10);
+const low = round50(subtotalLowExclVat * (1 + vatRate));
+const high = round50(subtotalHighExclVat * (1 + vatRate));
 
 const assumptions = {
   nl: ['Standaard referentiematen gebruikt', 'Plaatsing en afvoer inbegrepen', vatRate === 0.06 ? '6% btw onder voorbehoud van wettelijke voorwaarden' : '21% btw inbegrepen'],
@@ -124,12 +123,14 @@ return [{
     placement_included: true,
     manual_review: manualReview,
     assumptions: assumptions[request.language],
-    calculation_version: 'sp-v8-2026-11-margin-v2',
+    calculation_version: 'sp-v8-2026-11-markup-v3',
     // Internal audit totals stay inside n8n. Remove this object in the Respond to Webhook node.
     _internal: {
       total_area_m2: money(totalArea),
       placement_excl_vat: money(placement),
-      estimate_excl_vat: money(subtotalExclVat),
+      logistics_and_warehouse_excl_vat: money(logisticsAndWarehouse),
+      estimate_low_excl_vat: money(subtotalLowExclVat),
+      estimate_high_excl_vat: money(subtotalHighExclVat),
     },
   },
 }];
