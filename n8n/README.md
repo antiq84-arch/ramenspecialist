@@ -48,3 +48,14 @@ Store real values only inside n8n credentials, variables or a protected node. Do
 ## Lead webhook
 
 After the customer explicitly submits the contact form, create or update a Monday item in **Cold Leads**. Save the chosen language, contact data, product quantities, options, VAT assumption, displayed range, source and `manual_review`.
+
+The existing Monday destination was verified on 5 November 2026:
+
+- Board: `Lead / Follow up` (`5094961739`)
+- Group: `Cold lead` (`group_mm8ajwxd`)
+- Initial status: `New`
+- Priority: `Medium`, or `High` when `manual_review` is true
+
+Use `snellerprijs-lead-to-monday.js` before the Monday Create/Update Item node. Search by normalized phone and email before creating an item, so repeat calculations update the same lead instead of creating duplicates.
+
+The current board has no dedicated Email or Lead Source column. Until these columns are approved, both values are saved in `Notes`.
