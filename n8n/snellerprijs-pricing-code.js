@@ -81,7 +81,18 @@ if (request.options?.ventilation) {
   productCost += Number(config.ventilation_each || 0) * Math.max(1, openingUnits);
 }
 
-const commercialProducts = productCost * Number(config.commercial_coefficient);
+// Gross-margin targets are configured privately per proposition.
+// Coefficient = 1 / (1 - gross margin), e.g. 42.5% => 1.73913.
+const profile = request.options?.profile === 'optimal' ? 'optimal' : 'budget';
+const commercialCoefficient = Number(
+  profile === 'optimal'
+    ? config.commercial_coefficient_optimal || config.commercial_coefficient
+    : config.commercial_coefficient_budget || config.commercial_coefficient
+);
+if (!Number.isFinite(commercialCoefficient) || commercialCoefficient < 1) {
+  throw new Error(`Commercial coefficient is missing for profile: ${profile}`);
+}
+const commercialProducts = productCost * commercialCoefficient;
 const placement = Math.max(totalArea * 130, 350);
 const projectSurcharge = request.project?.building_type === 'apartment' && Number(request.project.floor) >= 2 && !request.project.lift
   ? Number(config.upper_floor_review_allowance || 0)
@@ -113,7 +124,7 @@ return [{
     placement_included: true,
     manual_review: manualReview,
     assumptions: assumptions[request.language],
-    calculation_version: 'sp-v8-2026-11',
+    calculation_version: 'sp-v8-2026-11-margin-v2',
     // Internal audit totals stay inside n8n. Remove this object in the Respond to Webhook node.
     _internal: {
       total_area_m2: money(totalArea),
