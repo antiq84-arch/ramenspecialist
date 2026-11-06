@@ -40,6 +40,7 @@ const positiveInteger = (value, fallback = 0) => {
 let productCost = 0;
 let totalArea = 0;
 let openingUnits = 0;
+let windowUnits = 0;
 let manualReview = Boolean(request.manual_review);
 
 for (const product of products) {
@@ -63,6 +64,7 @@ for (const product of products) {
   productCost += unitCost * quantity;
   totalArea += area * quantity;
   if (['tilt_turn', 'two_sash', 'three_sash', 'sliding'].includes(product.type)) openingUnits += quantity;
+  if (['fixed', 'tilt_turn', 'two_sash', 'three_sash', 'panoramic_fixed', 'sliding'].includes(product.type)) windowUnits += quantity;
   if (['panoramic_fixed', 'sliding', 'door', 'garage'].includes(product.type)) manualReview = true;
 }
 
@@ -77,8 +79,13 @@ if (request.options?.mosquito_screen && screenQuantity) {
   productCost += Number(config.mosquito_screen_each || 0) * screenQuantity;
 }
 
-if (request.options?.ventilation) {
-  productCost += Number(config.ventilation_each || 0) * Math.max(1, openingUnits);
+const ventilationType = ['glass', 'profile'].includes(request.options?.ventilation_type)
+  ? request.options.ventilation_type
+  : 'profile';
+const ventilationQuantity = Math.min(positiveInteger(request.options?.ventilation_quantity), windowUnits);
+if (request.options?.ventilation && ventilationQuantity) {
+  const ventilationUnitPrice = Number(config.ventilation?.[ventilationType] ?? config.ventilation_each ?? 0);
+  productCost += ventilationUnitPrice * ventilationQuantity;
 }
 
 // Mark-up ranges are configured privately per proposition.
