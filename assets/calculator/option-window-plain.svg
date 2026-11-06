@@ -1,0 +1,6 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 720 480" role="img" aria-label="Raam zonder rolluik of ventilatierooster">
+  <defs><linearGradient id="bg" x1="0" y1="0" x2="1" y2="1"><stop stop-color="#f8f6f1"/><stop offset="1" stop-color="#e8eee9"/></linearGradient><linearGradient id="glass" x1="0" y1="0" x2="1" y2="1"><stop stop-color="#dcebed"/><stop offset=".55" stop-color="#b7d3d6"/><stop offset="1" stop-color="#8fb8bd"/></linearGradient></defs>
+  <rect width="720" height="480" rx="28" fill="url(#bg)"/><rect x="85" y="48" width="550" height="384" rx="10" fill="#ddd5c8"/>
+  <rect x="217" y="88" width="286" height="320" rx="4" fill="#fff" stroke="#2d3738" stroke-width="22"/><rect x="247" y="118" width="226" height="260" fill="url(#glass)"/>
+  <path d="M265 144 389 118h59L273 298z" fill="#fff" opacity=".28"/><circle cx="458" cy="250" r="7" fill="#294b3c"/><path d="M458 250v45" stroke="#294b3c" stroke-width="7" stroke-linecap="round"/>
+</svg>
