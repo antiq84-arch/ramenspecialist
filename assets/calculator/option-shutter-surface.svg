@@ -1,0 +1,8 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 720 480" role="img" aria-label="Voorzetrolluik gemonteerd op de gevel">
+  <defs><linearGradient id="bg" x1="0" y1="0" x2="1" y2="1"><stop stop-color="#f8f6f1"/><stop offset="1" stop-color="#e7eee9"/></linearGradient><pattern id="slats" width="12" height="18" patternUnits="userSpaceOnUse"><rect width="12" height="14" fill="#81908b"/><rect y="14" width="12" height="4" fill="#42504d"/></pattern><linearGradient id="glass" x1="0" y1="0" x2="1" y2="1"><stop stop-color="#dcebed"/><stop offset="1" stop-color="#91b9be"/></linearGradient></defs>
+  <rect width="720" height="480" rx="28" fill="url(#bg)"/><rect x="70" y="40" width="580" height="400" rx="10" fill="#ddd5c8"/>
+  <rect x="224" y="120" width="272" height="288" fill="#fff" stroke="#2d3738" stroke-width="20"/><rect x="252" y="148" width="216" height="232" fill="url(#glass)"/>
+  <rect x="190" y="58" width="340" height="104" rx="17" fill="#52615d" stroke="#2d3738" stroke-width="10"/><path d="M215 92h290" stroke="#aeb8b4" stroke-width="8"/><path d="M215 118h290" stroke="#aeb8b4" stroke-width="8"/>
+  <rect x="207" y="157" width="306" height="128" fill="url(#slats)" opacity=".96"/><path d="M190 58v227M530 58v227" stroke="#2d3738" stroke-width="10"/>
+  <path d="M575 90v170" stroke="#37624f" stroke-width="8" stroke-linecap="round"/><path d="m557 236 18 24 18-24" fill="none" stroke="#37624f" stroke-width="8" stroke-linecap="round" stroke-linejoin="round"/>
+</svg>
