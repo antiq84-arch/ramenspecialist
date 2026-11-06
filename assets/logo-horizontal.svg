@@ -1,13 +1,13 @@
 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 410 88" role="img" aria-labelledby="title desc">
   <title id="title">Ramen Specialist</title>
-  <desc id="desc">An open orange window sash beside an anthracite frame and the words Ramen Specialist.</desc>
+  <desc id="desc">An open forest-green window sash beside an anthracite frame and the words Ramen Specialist.</desc>
   <g transform="translate(4 7)">
     <path d="M36 0 70 9v48l-34 9V0Z" fill="none" stroke="#24282A" stroke-width="7"/>
-    <path d="M31 1 5 9v48l26 8V1Z" fill="none" stroke="#C54F1C" stroke-width="7"/>
+    <path d="M31 1 5 9v48l26 8V1Z" fill="none" stroke="#37624F" stroke-width="7"/>
     <path d="M36 13 59 18v30l-23 5V13Z" fill="none" stroke="#24282A" stroke-width="4"/>
   </g>
   <g font-family="DM Sans, Arial, sans-serif">
     <text x="91" y="45" fill="#24282A" font-size="40" font-weight="800" letter-spacing="1.5">RAMEN</text>
-    <text x="92" y="70" fill="#C54F1C" font-size="18" font-weight="700" letter-spacing="6.2">SPECIALIST</text>
+    <text x="92" y="70" fill="#37624F" font-size="18" font-weight="700" letter-spacing="6.2">SPECIALIST</text>
   </g>
 </svg>
