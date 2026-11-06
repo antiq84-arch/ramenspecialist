@@ -50,6 +50,7 @@
   </main>
   <aside class="summary"><div class="summary-in"><div class="sum-copy"><div class="sum-label"><span class="green"></span><span id="sumCount" aria-live="polite">Nog geen elementen</span></div><div class="sum-price" id="sumPrice" aria-live="polite">Richtprijs na uw keuze</div><div class="sum-note">Incl. btw en standaardplaatsing</div></div><button class="nav-btn primary" id="summaryNext" disabled>Verder →</button></div></aside>
   <script src="assets/runtime-config.js"></script>
+  <script src="assets/snellerprijs-test-pricing.js"></script>
   <script src="assets/snellerprijs-i18n.js"></script>
   <script>
     const types=[
@@ -62,6 +63,7 @@
       ['door','Buitendeur','100 × 215 cm','door.webp'],
       ['garage','Sectionale garagepoort','250 × 212 cm','garage.webp']
     ];
+    const testMode=new URLSearchParams(location.search).get('test')==='1';
     const state={step:1,products:{},profile:'budget',glazing:'double',colour:'white',shutter:'none',shutterQuantity:0,ventilation:'none',ventilationQuantity:0,extras:{screens:false,screenQuantity:0},building:'house',vat:'renovation_6',flags:{difficult_access:false,extra_work:false},estimate:null,estimateUnavailable:false,calculationId:null,pricingRequest:0};
     const $=s=>document.querySelector(s),$$=s=>[...document.querySelectorAll(s)];
     function productLabel(id){const item=types.find(x=>x[0]===id);return rsLanguage()==='nl'&&item?item[1]:rsProductName(id)}
@@ -92,7 +94,7 @@
     async function calculate(){
       const pc=$('#postcode').value;if(!validateStep1())return;
       pricingController?.abort();pricingController=new AbortController();const requestId=newId(),requestNumber=++state.pricingRequest;state.estimate=null;state.estimateUnavailable=false;state.calculationId=null;$('#submitLead').disabled=true;$('#retryPricing').classList.remove('show');$('#resultPrice').textContent=rsT('calculating');$('#pricingStatus').className='status';$('#pricingStatus').textContent=rsT('calculating');setStep(4);renderReview();updateSummary();
-      const endpoint=window.RS_PRICING_ENDPOINT;if(!endpoint){showPricingFailure('notConnected');return}
+      const endpoint=window.RS_PRICING_ENDPOINT;if(!endpoint&&testMode&&window.RS_TEST_PRICING){const demo=window.RS_TEST_PRICING(payload(requestId));state.estimate=demo;state.estimateUnavailable=false;state.calculationId=`test-${requestId}`;const locale=rsLanguage()==='fr'?'fr-BE':rsLanguage()==='en'?'en-BE':'nl-BE';$('#resultPrice').textContent=`€ ${demo.low.toLocaleString(locale)} – € ${demo.high.toLocaleString(locale)}`;$('#pricingStatus').className='status';$('#pricingStatus').textContent=rsT('testEstimate');$('#submitLead').disabled=false;updateSummary();return}if(!endpoint){showPricingFailure('notConnected');return}
       const timer=setTimeout(()=>pricingController.abort(),12000);
       try{const res=await fetch(endpoint,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(payload(requestId)),signal:pricingController.signal});if(!res.ok)throw new Error('pricing');const data=await res.json(),low=Number(data.price_low_incl_vat),high=Number(data.price_high_incl_vat);if(requestNumber!==state.pricingRequest)return;if(!data.ok||!Number.isFinite(low)||!Number.isFinite(high)||low<0||high<low)throw new Error('pricing');state.estimate={low,high};state.estimateUnavailable=false;state.calculationId=String(data.calculation_id||requestId);const locale=rsLanguage()==='fr'?'fr-BE':rsLanguage()==='en'?'en-BE':'nl-BE';$('#resultPrice').textContent=`€ ${low.toLocaleString(locale)} – € ${high.toLocaleString(locale)}`;$('#pricingStatus').className='status';$('#pricingStatus').textContent=data.manual_review?rsT('manual'):rsT('standard');$('#submitLead').disabled=false;updateSummary()}catch(error){if(requestNumber!==state.pricingRequest||error.name==='AbortError'&&requestNumber!==state.pricingRequest)return;showPricingFailure()}finally{clearTimeout(timer)}
     }
@@ -107,7 +109,7 @@
       const invalid=[];if(phone.replace(/\D/g,'').length<8)invalid.push(phoneInput);if(!email||!emailInput.checkValidity())invalid.push(emailInput);
       if(invalid.length){contactError.textContent=rsT('contactInvalid');contactError.classList.add('show');invalid.forEach(field=>field.setAttribute('aria-invalid','true'));invalid[0].focus();return}
       if(!privacyConsent){$('#consentError').classList.add('show');$('#privacyConsent').setAttribute('aria-invalid','true');$('#privacyConsent').focus();return}if($('#website').value)return;
-      const endpoint=window.RS_LEAD_ENDPOINT;if(!endpoint){contactError.textContent=rsT('crmMissing');contactError.classList.add('show');$('#submitLead').focus();return}
+      const endpoint=window.RS_LEAD_ENDPOINT;if(!endpoint){contactError.textContent=testMode?rsT('testEmailUnavailable'):rsT('crmMissing');contactError.classList.add('show');$('#submitLead').focus();return}
       const requestId=newId(),body={...payload(requestId),calculation_id:state.calculationId,estimate_unavailable:state.estimateUnavailable,delivery:{email_estimate_pdf:true,format:'pdf'},contact:{name,phone,email,notes:$('#notes').value},consent:{privacy_notice_acknowledged:true,manager_contact_acknowledged:true,partner_sharing:$('#partnerConsent').checked,privacy_notice_version:'2026-11-05',timestamp:new Date().toISOString()},source:'snelleprijs-v8',submitted_at:new Date().toISOString()};
       try{$('#submitLead').disabled=true;const res=await fetch(endpoint,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(body)});if(!res.ok)throw 0;$('#submitLead').textContent=rsT('received');leadStatus.textContent=rsT('received')}catch{$('#submitLead').disabled=false;contactError.textContent=rsT('sendError');contactError.classList.add('show');$('#submitLead').focus()}
     };
