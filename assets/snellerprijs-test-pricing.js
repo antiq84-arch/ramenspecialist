@@ -33,9 +33,9 @@ window.RS_TEST_PRICING = request => {
   factoryCost += 150 * Number(request.options?.ventilation_quantity || 0);
 
   const optimal = request.options?.profile === 'optimal';
-  const markupLow = optimal ? 1.50 : 1.40;
-  const markupHigh = optimal ? 1.55 : 1.45;
-  const placement = Math.max(totalArea * 130, 350);
+  const markupLow = optimal ? 1.60 : 1.50;
+  const markupHigh = optimal ? 1.65 : 1.55;
+  const placement = totalArea >= 2.5 ? totalArea * 130 : 350;
   const logisticsAndWarehouse = 350;
   const lowExclVat = factoryCost * markupLow + placement + logisticsAndWarehouse;
   const highExclVat = factoryCost * markupHigh + placement + logisticsAndWarehouse;
