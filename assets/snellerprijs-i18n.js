@@ -82,7 +82,9 @@
   Object.assign(staticText.fr, {
     'Bewaar uw voorlopige berekening':'Enregistrez votre estimation provisoire',
     'Vul uw e-mailadres in. Zo blijft uw project bewaard wanneer u later wilt verdergaan.':'Saisissez votre adresse e-mail. Votre projet restera ainsi enregistré si vous souhaitez le reprendre plus tard.',
-    'Door verder te gaan vraagt u RamenSpecialist om deze berekening te bewaren en mag een adviseur u hierover per e-mail contacteren. Lees ons':'En continuant, vous demandez à RamenSpecialist d’enregistrer ce calcul et autorisez un conseiller à vous contacter à ce sujet par e-mail. Consultez notre',
+    'Lees hoe wij uw gegevens verwerken in ons':'Découvrez comment nous traitons vos données dans notre',
+    'Ik vraag RamenSpecialist om mijn berekening te bewaren. Een adviseur mag mij uitsluitend over deze aanvraag per e-mail of telefoon contacteren.':'Je demande à RamenSpecialist d’enregistrer mon calcul. Un conseiller peut me contacter par e-mail ou par téléphone uniquement au sujet de cette demande.',
+    'Bevestig dat wij uw berekening mogen bewaren en u hierover mogen contacteren.':'Confirmez que nous pouvons enregistrer votre calcul et vous contacter à ce sujet.',
     'RamenSpecialist mag mijn contactgegevens en projectvoorkeuren gebruiken voor gepersonaliseerde advertenties en om vergelijkbare doelgroepen te maken via advertentieplatformen zoals Meta en Google. Ik kan deze toestemming altijd intrekken.':'RamenSpecialist peut utiliser mes coordonnées et les préférences de mon projet pour des publicités personnalisées et pour créer des audiences similaires via des plateformes publicitaires telles que Meta et Google. Je peux retirer ce consentement à tout moment.',
     'Waarop mogen we u bereiken?':'À quel numéro pouvons-nous vous joindre ?',
     'Uw nummer helpt ons alleen wanneer een technische keuze of gratis opmeting verduidelijking vraagt.':'Votre numéro nous sert uniquement lorsqu’un choix technique ou le mesurage gratuit nécessite une précision.',
@@ -94,7 +96,9 @@
   Object.assign(staticText.en, {
     'Bewaar uw voorlopige berekening':'Save your preliminary estimate',
     'Vul uw e-mailadres in. Zo blijft uw project bewaard wanneer u later wilt verdergaan.':'Enter your email address so your project is saved if you want to continue later.',
-    'Door verder te gaan vraagt u RamenSpecialist om deze berekening te bewaren en mag een adviseur u hierover per e-mail contacteren. Lees ons':'By continuing, you ask RamenSpecialist to save this calculation and allow an adviser to contact you about it by email. Read our',
+    'Lees hoe wij uw gegevens verwerken in ons':'Read how we process your data in our',
+    'Ik vraag RamenSpecialist om mijn berekening te bewaren. Een adviseur mag mij uitsluitend over deze aanvraag per e-mail of telefoon contacteren.':'I ask RamenSpecialist to save my calculation. An adviser may contact me by email or phone only about this request.',
+    'Bevestig dat wij uw berekening mogen bewaren en u hierover mogen contacteren.':'Confirm that we may save your calculation and contact you about it.',
     'RamenSpecialist mag mijn contactgegevens en projectvoorkeuren gebruiken voor gepersonaliseerde advertenties en om vergelijkbare doelgroepen te maken via advertentieplatformen zoals Meta en Google. Ik kan deze toestemming altijd intrekken.':'RamenSpecialist may use my contact details and project preferences for personalised advertising and to create similar audiences through advertising platforms such as Meta and Google. I can withdraw this consent at any time.',
     'Waarop mogen we u bereiken?':'What number may we reach you on?',
     'Uw nummer helpt ons alleen wanneer een technische keuze of gratis opmeting verduidelijking vraagt.':'We only use your number when a technical choice or free measurement needs clarification.',
