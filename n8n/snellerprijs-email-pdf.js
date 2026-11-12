@@ -1,39 +1,40 @@
-// n8n Code node — build the trusted Snelle Prijs email/PDF summary.
-// Input: { request: <lead webhook body>, trustedCalculation: <Data Store result> }
-// The price must come from trustedCalculation, never from the browser request.
+// n8n Code node — build a text-first NL/FR/EN email and PDF.
+// Input: { request, trustedCalculation }. Prices and calculation_id are trusted server data.
+const input=$input.first().json;
+const request=input.request||input.body||{};
+const calc=input.trustedCalculation||input.calculation;
+if(!request.contact?.email||!calc?.calculation_id||!Number.isFinite(Number(calc?.price_low_incl_vat))||!Number.isFinite(Number(calc?.price_high_incl_vat))) throw new Error('Trusted calculation and customer email are required');
 
-const input = $input.first().json;
-const request = input.request || input.body || {};
-const calculation = input.trustedCalculation || input.calculation;
-
-if (!request.contact?.email || !calculation?.price_low_incl_vat || !calculation?.price_high_incl_vat) {
-  throw new Error('Trusted calculation and customer email are required');
-}
-
-const lang = ['nl', 'fr', 'en'].includes(request.language) ? request.language : 'nl';
-const copy = {
-  nl: { subject: 'Uw indicatieve berekening — RamenSpecialist', title: 'Uw indicatieve berekening', intro: 'Hieronder vindt u een overzicht van uw keuzes en onze indicatieve prijsrange.', selection: 'Uw selectie', price: 'Richtprijs inclusief btw en standaardplaatsing', note: 'De definitieve prijs volgt na technische controle en opmeting.', quantity: 'Aantal' },
-  fr: { subject: 'Votre estimation indicative — RamenSpecialist', title: 'Votre estimation indicative', intro: 'Vous trouverez ci-dessous un aperçu de vos choix et de notre fourchette de prix indicative.', selection: 'Votre sélection', price: 'Estimation TVA et pose standard comprises', note: 'Le prix définitif est établi après le contrôle technique et le mesurage.', quantity: 'Quantité' },
-  en: { subject: 'Your indicative estimate — RamenSpecialist', title: 'Your indicative estimate', intro: 'Below is a summary of your choices and our indicative price range.', selection: 'Your selection', price: 'Estimate including VAT and standard installation', note: 'The final price follows after a technical check and measurement.', quantity: 'Quantity' },
+const lang=['nl','fr','en'].includes(request.language)?request.language:'nl';
+const copy={
+  nl:{subject:'Uw prijsindicatie — RamenSpecialist',title:'Uw persoonlijke prijsindicatie',hello:'Beste',intro:'Bedankt voor uw aanvraag. Hieronder vindt u uw selectie en indicatieve prijs.',selection:'Uw selectie',price:'Richtprijs inclusief btw',ref:'Referentie',date:'Datum',included:'Plaatsing en afvoer van oude ramen zijn inbegrepen binnen een standaard werfsituatie.',disclaimer:'Dit is een vrijblijvende prijsindicatie en geen definitieve offerte. De uiteindelijke prijs wordt vastgesteld na een gratis technische opmeting en controle van de gekozen uitvoering. Afhankelijk van de werkelijke afmetingen, technische omstandigheden en definitieve opties kan de prijs zowel hoger als lager uitvallen.',cta:'Vraag een gratis opmeting aan',closing:'Met vriendelijke groet',profile:'Profiel',glazing:'Beglazing',colour:'Kleur',shutters:'Rolluiken',ventilation:'Ventilatie',screens:'Vliegenramen',vat:'Btw'},
+  fr:{subject:'Votre estimation de prix — RamenSpecialist',title:'Votre estimation de prix personnelle',hello:'Bonjour',intro:'Merci pour votre demande. Vous trouverez ci-dessous votre sélection et notre fourchette de prix indicative.',selection:'Votre sélection',price:'Estimation TVA comprise',ref:'Référence',date:'Date',included:'La pose et l’évacuation des anciennes fenêtres sont comprises dans une situation de chantier standard.',disclaimer:'Il s’agit d’une estimation de prix sans engagement et non d’une offre définitive. Le prix final est déterminé après un mesurage technique gratuit et la vérification de l’exécution choisie. En fonction des dimensions réelles, des conditions techniques et des options définitives, le prix peut aussi bien augmenter que diminuer.',cta:'Demander un mesurage gratuit',closing:'Cordialement',profile:'Profil',glazing:'Vitrage',colour:'Couleur',shutters:'Volets roulants',ventilation:'Ventilation',screens:'Moustiquaires',vat:'TVA'},
+  en:{subject:'Your price indication — RamenSpecialist',title:'Your personal price indication',hello:'Dear',intro:'Thank you for your request. Below you will find your selection and indicative price range.',selection:'Your selection',price:'Estimate including VAT',ref:'Reference',date:'Date',included:'Standard installation and removal of the old windows are included.',disclaimer:'This is a non-binding price indication and not a final quotation. The final price is determined after a free technical measurement and verification of the selected specification. Depending on the actual dimensions, technical conditions and final options, the price may increase or decrease.',cta:'Request a free measurement',closing:'Kind regards',profile:'Profile',glazing:'Glazing',colour:'Colour',shutters:'Roller shutters',ventilation:'Ventilation',screens:'Insect screens',vat:'VAT'},
 }[lang];
-
-const productNames = {
-  nl: { fixed:'Vast raam', tilt_turn:'Draai-kiepraam', two_sash:'Dubbel draai-kiepraam', three_sash:'Driedelig draai-kiepraam', panoramic_fixed:'Panoramisch vast raam', sliding:'Schuifraam', door:'Buitendeur', garage:'Sectionale garagepoort' },
-  fr: { fixed:'Fenêtre fixe', tilt_turn:'Fenêtre oscillo-battante', two_sash:'Fenêtre oscillo-battante à deux ouvrants', three_sash:'Fenêtre oscillo-battante à trois parties', panoramic_fixed:'Fenêtre panoramique fixe', sliding:'Baie coulissante', door:'Porte extérieure', garage:'Porte de garage sectionnelle' },
-  en: { fixed:'Fixed window', tilt_turn:'Tilt-and-turn window', two_sash:'Double tilt-and-turn window', three_sash:'Triple tilt-and-turn window', panoramic_fixed:'Panoramic fixed window', sliding:'Sliding window', door:'Exterior door', garage:'Sectional garage door' },
+const productNames={nl:{fixed:'Vast raam',tilt_turn:'Draai-kiepraam',two_sash:'Dubbel draai-kiepraam',three_sash:'Driedelig draai-kiepraam',panoramic_fixed:'Panoramisch vast raam',sliding:'Schuifraam',door:'Buitendeur',garage:'Sectionale garagepoort'},fr:{fixed:'Fenêtre fixe',tilt_turn:'Fenêtre oscillo-battante',two_sash:'Fenêtre oscillo-battante à deux ouvrants',three_sash:'Fenêtre oscillo-battante à trois parties',panoramic_fixed:'Fenêtre panoramique fixe',sliding:'Baie coulissante',door:'Porte extérieure',garage:'Porte de garage sectionnelle'},en:{fixed:'Fixed window',tilt_turn:'Tilt-and-turn window',two_sash:'Double tilt-and-turn window',three_sash:'Triple tilt-and-turn window',panoramic_fixed:'Panoramic fixed window',sliding:'Sliding window',door:'Exterior door',garage:'Sectional garage door'}}[lang];
+const optionNames={
+  nl:{budget:'Budget',optimal:'Optimaal',double:'Dubbel glas',triple:'Driedubbel glas',white:'Wit',outside:'Kleur buiten',both:'Kleur binnen en buiten',none:'Geen',surface:'Voorzetrolluik',built_in:'Opbouwrolluik',glass:'Rooster in het glas',profile:'Rooster op het profiel',renovation_6:'6% onder voorbehoud',standard_21:'21%'},
+  fr:{budget:'Budget',optimal:'Optimal',double:'Double vitrage',triple:'Triple vitrage',white:'Blanc',outside:'Couleur extérieure',both:'Couleur intérieure et extérieure',none:'Aucun',surface:'Volet roulant extérieur',built_in:'Volet roulant monobloc',glass:'Grille dans le vitrage',profile:'Grille au-dessus du profilé',renovation_6:'6 % sous réserve',standard_21:'21 %'},
+  en:{budget:'Budget',optimal:'Optimal',double:'Double glazing',triple:'Triple glazing',white:'White',outside:'Exterior colour',both:'Interior and exterior colour',none:'None',surface:'Front-mounted roller shutter',built_in:'Top-mounted roller shutter',glass:'Grille in the glazing',profile:'Grille above the profile',renovation_6:'6% subject to approval',standard_21:'21%'},
 }[lang];
-
-const escapeHtml = value => String(value ?? '').replace(/[&<>"']/g, char => ({ '&':'&amp;', '<':'&lt;', '>':'&gt;', '"':'&quot;', "'":'&#39;' }[char]));
-const locale = lang === 'fr' ? 'fr-BE' : lang === 'en' ? 'en-BE' : 'nl-BE';
-const money = value => new Intl.NumberFormat(locale, { style:'currency', currency:'EUR', maximumFractionDigits:0 }).format(Number(value));
-const rows = (request.products || []).filter(item => Number(item.quantity) > 0).map(item => `
-  <tr><td>${escapeHtml(productNames[item.type] || item.type)}</td><td>${escapeHtml(item.quantity)}</td></tr>`).join('');
-
-const html = `<!doctype html><html lang="${lang}"><head><meta charset="utf-8"><style>
-body{font-family:Arial,sans-serif;color:#292e2f;margin:42px;line-height:1.5}h1{font-size:30px;margin:0 0 8px;color:#294b3c}.brand{font-weight:700;letter-spacing:.08em;margin-bottom:36px}.price{font-size:28px;color:#294b3c;font-weight:700;margin:20px 0;padding:18px;background:#ecf2ee;border-radius:10px}table{width:100%;border-collapse:collapse;margin:16px 0 24px}th,td{text-align:left;border-bottom:1px solid #d8d2c9;padding:10px 6px}.muted{color:#686c6a;font-size:13px}</style></head><body>
-<div class="brand">RAMEN SPECIALIST</div><h1>${copy.title}</h1><p>${copy.intro}</p><p>${escapeHtml(request.contact.name)}</p>
-<h2>${copy.selection}</h2><table><thead><tr><th>${copy.selection}</th><th>${copy.quantity}</th></tr></thead><tbody>${rows}</tbody></table>
-<div class="price">${copy.price}<br>${money(calculation.price_low_incl_vat)} – ${money(calculation.price_high_incl_vat)}</div>
-<p class="muted">${copy.note}</p></body></html>`;
-
-return [{ json: { email_to: request.contact.email.trim().toLowerCase(), email_subject: copy.subject, pdf_filename: `RamenSpecialist-${request.calculation_id || 'berekening'}.pdf`, html } }];
+const esc=v=>String(v??'').replace(/[&<>"']/g,ch=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[ch]));
+const locale=lang==='fr'?'fr-BE':lang==='en'?'en-BE':'nl-BE';
+const money=v=>new Intl.NumberFormat(locale,{style:'currency',currency:'EUR',maximumFractionDigits:0}).format(Number(v));
+const date=new Intl.DateTimeFormat(locale,{year:'numeric',month:'long',day:'numeric'}).format(new Date());
+const opts=request.options||{}, project=request.project||{};
+const lines=(request.products||[]).filter(x=>Number(x.quantity)>0).map(x=>`${productNames[x.type]||x.type} × ${Number(x.quantity)}`);
+lines.push(`${copy.profile}: ${optionNames[opts.profile]||opts.profile||'—'}`,`${copy.glazing}: ${optionNames[opts.glazing]||opts.glazing||'—'}`,`${copy.colour}: ${optionNames[opts.colour]||opts.colour||'—'}`);
+if(opts.shutter&&opts.shutter!=='none'&&Number(opts.shutter_quantity)>0) lines.push(`${copy.shutters}: ${optionNames[opts.shutter]||opts.shutter} × ${Number(opts.shutter_quantity)}`);
+if(opts.ventilation_type&&opts.ventilation_type!=='none'&&Number(opts.ventilation_quantity)>0) lines.push(`${copy.ventilation}: ${optionNames[opts.ventilation_type]||opts.ventilation_type} × ${Number(opts.ventilation_quantity)}`);
+if(opts.mosquito_screen&&Number(opts.mosquito_screen_quantity)>0) lines.push(`${copy.screens}: ${Number(opts.mosquito_screen_quantity)}`);
+lines.push(`${copy.vat}: ${optionNames[project.vat_choice]||'—'}`);
+const selectionHtml=lines.map(line=>`<li>${esc(line)}</li>`).join('');
+const price=`${money(calc.price_low_incl_vat)} – ${money(calc.price_high_incl_vat)}`;
+const installation=calc.placement_included===true?`<p class="included">✓ ${esc(copy.included)}</p>`:'';
+const content=`<p>${esc(copy.hello)} ${esc(request.contact.name)},</p><p>${esc(copy.intro)}</p><h2>${esc(copy.selection)}</h2><ul>${selectionHtml}</ul><div class="price">${esc(copy.price)}<br>${esc(price)}</div>${installation}<div class="notice">${esc(copy.disclaimer)}</div>`;
+const styles=`body{font-family:Arial,sans-serif;color:#202727;margin:42px;line-height:1.55}.brand{color:#294b3c;font-weight:800;letter-spacing:.08em;margin-bottom:28px}h1{font-size:28px;color:#294b3c}h2{margin-top:24px}.meta{color:#66706b;font-size:13px}.price{font-size:28px;color:#294b3c;font-weight:700;margin:22px 0;padding:18px;background:#ecf2ee;border-radius:10px}.included{color:#1f6b45;font-weight:700}.notice{margin-top:24px;padding:16px;border:1px solid #d8d2c9;border-radius:8px;font-size:13px}.footer{margin-top:32px;color:#66706b;font-size:12px}`;
+const header=`<div class="brand">RAMEN SPECIALIST</div><h1>${esc(copy.title)}</h1><div class="meta">${esc(copy.ref)}: ${esc(calc.calculation_id)} · ${esc(copy.date)}: ${esc(date)}</div>`;
+const footer=`<div class="footer">RamenSpecialist.com · info@ramenspecialist.com · BTW BE 0803.940.651</div>`;
+const pdfHtml=`<!doctype html><html lang="${lang}"><head><meta charset="utf-8"><style>${styles}</style></head><body>${header}${content}${footer}</body></html>`;
+const emailHtml=`<!doctype html><html lang="${lang}"><head><meta charset="utf-8"><style>${styles}</style></head><body>${header}${content}<p><a href="https://www.ramenspecialist.com/#contact">${esc(copy.cta)}</a></p><p>${esc(copy.closing)},<br>RamenSpecialist</p>${footer}</body></html>`;
+return [{json:{email_to:request.contact.email.trim().toLowerCase(),email_subject:copy.subject,email_html:emailHtml,pdf_html:pdfHtml,pdf_filename:`RamenSpecialist-${calc.calculation_id}.pdf`,calculation_id:calc.calculation_id,price_low_incl_vat:Number(calc.price_low_incl_vat),price_high_incl_vat:Number(calc.price_high_incl_vat),monday_file_column_id:'file_mm91h41c'}}];
