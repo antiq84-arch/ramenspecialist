@@ -3,9 +3,11 @@
 ## Public pricing webhook
 
 1. **Webhook** receives the calculator request.
-2. **Set / Code — Private Pricing Config** adds `_privatePricing`. This node is private and contains the verified anchors and coefficients.
-3. **Code — Pricing Engine** uses `snellerprijs-pricing-code.js`.
-4. **Set — Public Response** returns only:
+2. **Set — Server Calculation ID** creates `_serverCalculationId` from the private n8n execution ID.
+3. **Set / Code — Private Pricing Config** adds `_privatePricing`. This node is private and contains the verified anchors and coefficients.
+4. **Code — Pricing Engine** uses `snellerprijs-pricing-code.js`.
+5. **Data Table — Calculations** persists the trusted request and result by `calculation_id`.
+6. **Set — Public Response** returns only:
    - `ok`
    - `currency`
    - `vat_rate`
@@ -15,7 +17,7 @@
    - `manual_review`
    - `assumptions`
    - `calculation_version`
-5. **Respond to Webhook** sends the public response. Never send `_internal` or `_privatePricing`.
+7. **Respond to Webhook** sends the public response. Never send `_internal` or `_privatePricing`.
 
 ## Private configuration shape
 
@@ -48,16 +50,15 @@ Store real values only inside n8n credentials, variables or a protected node. Do
 
 ## Lead webhook
 
-After the customer explicitly submits the contact form, create or update a Monday item in **Cold Leads**. Save the chosen language, contact data, product quantities, options, VAT assumption, displayed range, source and `manual_review`.
+Progress events create or update one Monday item in **CRM & Leads - Ramen en Deuren**, group **Leads**. The real board and column IDs are centralized in `snellerprijs-lead-to-monday.js`.
 
-The existing Monday destination was verified on 5 November 2026:
+The Monday destination was read from the live board on 12 November 2026:
 
-- Board: `Lead / Follow up` (`5094961739`)
-- Group: `Cold lead` (`group_mm8ajwxd`)
+- Board: `CRM & Leads - Ramen en Deuren` (`5107699907`)
+- Group: `Leads` (`topics`)
 - Initial status: `New`
-- Priority: `Medium`, or `High` when `manual_review` is true
 
-Use `snellerprijs-lead-to-monday.js` before the Monday Create/Update Item node. Search by normalized phone and email before creating an item, so repeat calculations update the same lead instead of creating duplicates.
+Use `snellerprijs-lead-to-monday.js` and search by Session ID. Follow `snellerprijs-workflow-contract.md` for the lock, retry-search and protected-update rules.
 
 When `delivery.email_estimate_pdf` is `true`, the lead workflow must also:
 
@@ -69,4 +70,4 @@ When `delivery.email_estimate_pdf` is `true`, the lead workflow must also:
 
 Do not use a client-supplied price in the PDF. The public pricing workflow must store the trusted result by `calculation_id` before responding to the browser.
 
-The current board has no dedicated Email or Lead Source column. Until these columns are approved, both values are saved in `Notes`.
+The board has dedicated typed columns for e-mail, phone, source, prices, consent and PDF delivery.
