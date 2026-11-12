@@ -125,7 +125,7 @@
       if($('#website').value)return;
       const endpoint=window.RS_LEAD_ENDPOINT;if(!endpoint){contactError.textContent=rsT('crmMissing');contactError.classList.add('show');$('#submitLead').focus();return}
       const requestId=newId(),body={...payload(requestId),event:'lead_complete',stage:'calculation_completed',status:'warm_lead',calculation_id:state.calculationId,estimate_unavailable:state.estimateUnavailable,delivery:{email_estimate_pdf:true,format:'pdf'},contact:{name,phone,email,notes:$('#notes').value},consent:leadConsent(),source:'snelleprijs-v8',submitted_at:new Date().toISOString()};
-      try{$('#submitLead').disabled=true;const res=await fetch(endpoint,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(body)});if(!res.ok)throw 0;$('#submitLead').textContent=rsT('received');leadStatus.textContent=rsT('received')}catch{$('#submitLead').disabled=false;contactError.textContent=rsT('sendError');contactError.classList.add('show');$('#submitLead').focus()}
+      try{$('#submitLead').disabled=true;const res=await fetch(endpoint,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(body)});if(!res.ok)throw 0;const result=await res.json();if(result?.ok!==true||result?.email_sent!==true)throw 0;$('#submitLead').textContent=rsT('received');leadStatus.textContent=rsT('received')}catch{$('#submitLead').disabled=false;contactError.textContent=rsT('sendError');contactError.classList.add('show');$('#submitLead').focus()}
     };
     document.addEventListener('rs:languagechange',()=>{renderProducts();updateSummary();setStep(state.step);if(state.step===4){renderReview();renderPriceState()}});
   </script>
